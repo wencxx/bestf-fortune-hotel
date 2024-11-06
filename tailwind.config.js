@@ -1,8 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [],
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        inter: ['Inter', 'sans-serif']
+      },
+      colors: {
+        'custom-primary': '#cb2107',
+        'custom-secondary': '#fffc37',
+      }
+    },
   },
   plugins: [],
 }

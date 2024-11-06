@@ -1,30 +1,17 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="relative h-screen">
+    <div class="hero h-[80dvh] w-screen bg-cover bg-center bg-no-repeat absolute top-0 left-0"></div>
+    <Header class="sticky top-0" />
+    <router-view class="relative" />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
+<script setup>
+import Header from './components/Header.vue'
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.hero {
+  background-image: url('../src/assets/e77d83b6b413fcd4afe538137cb6a2bb.jpg');
 }
 </style>
