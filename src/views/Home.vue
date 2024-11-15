@@ -8,16 +8,27 @@
             <div class="flex w-11/12 bg-white lg:w-2/5 h-20 rounded font-light shadow overflow-hidden">
                 <div class="w-1/4 flex flex-col items-center justify-center cursor-pointer">
                     <span>Check in</span>
-                    <input type="date" id="checkin" class="text-xs cursor-pointer focus:outline-none">
+                    <input type="date" id="checkin" class="text-xs cursor-pointer focus:outline-none" v-model="checkInDate">
                 </div>
                 <div class="w-1/4 flex flex-col items-center justify-center cursor-pointer">
                     <span>Check out</span>
-                    <input type="date" id="checkin" class="text-xs cursor-pointer focus:outline-none">
+                    <input type="date" id="checkin" class="text-xs cursor-pointer focus:outline-none" v-model="checkOutDate">
                 </div>
-                <div class="w-1/4 flex items-center justify-center">
+                <div class="w-1/4 flex flex-col items-center justify-center cursor-pointer">
                     guests
+                    <select class="border w-3/5 rounded pl-2 focus:outline-none" v-model="guests">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                    </select>
                 </div>
-                <button class="w-1/4 px-10 flex items-center justify-center bg-custom-primary text-white font-inter">
+                <button class="w-1/4 px-10 flex items-center justify-center bg-custom-primary text-white font-inter" @click="checkAvailability">
                     Check Availability
                 </button>
             </div>
@@ -29,22 +40,22 @@
                 <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
                     <Icon icon="material-symbols:emoji-transportation-outline-rounded" class="text-4xl text-custom-primary" />
                     <h1 class="text-xl">Transportation</h1>
-                    <p class="text-center text-gray-400">650 meters to public transportation</p>
+                    <p class="text-center  text-gray-500">650 meters to public transportation</p>
                 </div>
                 <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
                     <Icon icon="material-symbols:wifi"  class="text-4xl text-custom-primary" />
                     <h1 class="text-xl">Internet Connection</h1>
-                    <p class="text-center text-gray-400">Free Wi-Fi in all rooms</p>
+                    <p class="text-center  text-gray-500">Free Wi-Fi in all rooms</p>
                 </div>
                 <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
                     <Icon icon="mdi:vacuum-cleaner"  class="text-4xl text-custom-primary" />
                     <h1 class="text-xl">Maintenance</h1>
-                    <p class="text-center text-gray-400">Daily Housekeeping</p>
+                    <p class="text-center  text-gray-500">Daily Housekeeping</p>
                 </div>
                 <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
                     <Icon icon="mingcute:air-condition-open-fill"  class="text-4xl text-custom-primary" />
                     <h1 class="text-xl">Air Conditioning</h1>
-                    <p class="text-center text-gray-400">Fully air-conditioned rooms</p>
+                    <p class="text-center  text-gray-500">Fully air-conditioned rooms</p>
                 </div>
             </div>
         </div>
@@ -163,11 +174,30 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 onMounted(() => {
     runSlider()
 })
 
+const checkInDate = ref('')
+const checkOutDate = ref('')
+const guests = ref('')
+
+const checkAvailability = () => {
+    router.push({
+        name: 'rooms',
+        query: {
+            checkIn: checkInDate.value,
+            checkOut: checkOutDate.value,
+            guests: guests.value
+        }
+    })
+}
+
+// testimonials slider
 const testimonials = ref([
     {
         author: 'wency baterna',

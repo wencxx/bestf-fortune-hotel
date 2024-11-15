@@ -1,33 +1,141 @@
 <template>
-    <div class="h-[90dvh] bg-gray-100 py-10">
+    <div class="min-h-[90dvh] bg-gray-100 py-10 !pb-20 px-10">
         <div class="flex flex-col items-center gap-y-20">
             <div class="border-b border-black w-fit mx-auto">
                 <h1 class="text-3xl font-serif">Our Room</h1>
             </div>
+            <div class="w-full max-w-6xl border">
+                <div class="flex flex-col gap-y-5 p-5 lg:flex-row w-full bg-white lg:w-full h-fit lg:h-20 rounded font-light shadow overflow-hidden">
+                    <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
+                        <span class="text-lg font-medium">Check in</span>
+                        <input type="date" id="checkin" class="text-sm cursor-pointer focus:outline-none" v-model="checkIn">
+                    </div>
+                    <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
+                        <span class="text-lg font-medium">Check out</span>
+                        <input type="date" id="checkin" class="text-sm cursor-pointer focus:outline-none" v-model="checkOut">
+                    </div>
+                    <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
+                        <span class="text-lg font-medium">Guests</span>
+                        <select class="border w-full h-8 lg:w-3/5 rounded pl-2 focus:outline-none" v-model="guests">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                        </select>
+                    </div>
+                    <button class="h-14 lg:h-full w-full lg:w-1/4 px-10 flex items-center justify-center bg-custom-primary text-white font-inter" @click="checkAvailability">
+                        <span>Check Availability</span>
+                    </button>
+                </div>
+            </div>
             <!-- rooms -->
-            <div class="w-full max-w-6xl border grid grid-cols-3">
-                <div class="flex flex-col gap-y-10 border col-span-2">
-                    <div class="flex gap-5 h-fit">
-                        <!-- img -->
-                        <div class="w-1/2 aspect-video rounded bg-gray-500 animate-pulse">
-
-                        </div>
-                        <!-- data -->
-                        <div class="flex flex-col gap-y-2 py-2">
-                            <h1 class="font-inter font-semibold tracking-wide text-2xl">Deluxe Room</h1>
-                            <h2 class="font-semibold"><span class="text-custom-primary text-xl">₱1,623</span> <span class="text-sm text-gray-500">/ night</span></h2>
-                            <div class="w-full grid grid-cols-2 gap-y-2">
-                                <p class="text-sm w-3/4 font-inter text-gray-500 font-semibold tracking-wide">Bed:<br><span class="text-black font-medium text-sm">1 Double Bed and 1 Single Bed</span></p>
-                                <p class="text-sm w-3/4 font-inter text-gray-500 font-semibold tracking-wide">Size:<br><span class="text-black font-medium text-sm">14 m²/151 ft²</span></p>
-                                <p class="text-sm w-3/4 font-inter text-gray-500 font-semibold tracking-wide">Capacity:<br><span class="text-black font-medium text-sm">4 persons</span></p>
-                                <p class="text-sm w-3/4 font-inter text-gray-500 font-semibold tracking-wide">Bathroom::<br><span class="text-black font-medium text-sm">Shower</span></p>
+            <div v-if="!loadingRooms && filteredRooms().length" class="w-full max-w-6xl grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10">
+                <div v-for="(room, index) in filteredRooms()" :key="index" class="flex flex-col h-full rounded-t overflow-hidden shadow">
+                    <!-- img -->
+                    <div class="relative">
+                        <img :src="room.thumbnailUrl" alt="deluxe" class="w-full aspect-video object-cover">
+                        <p v-if="!room.isAvailable" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-500 px-3 py-1 rounded text-white uppercase text-sm">Not available</p>
+                    </div>
+                    <div class="flex flex-col gap-y-2 p-5 border h-full">
+                        <h1 class="font-serif font-light tracking-wide text-2xl">{{ room.roomName }}</h1>
+                        <h2 class="font-semibold"><span class="text-custom-primary text-xl font-serif">₱{{ room.roomPrice }}</span><span class="text-sm text-gray-500">/night</span></h2>
+                        <div class="space-y-3 mt-2">
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <h1 class="w-1/2">Size:</h1>
+                                <p class="w-1/2">{{ room.roomSize }}</p>
                             </div>
-                            <p class="text-sm">Spacious and ideal for small families or groups, offering a blend of comfort and value.</p>
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <h1 class="w-1/2">Capacity:</h1>
+                                <p class="w-1/2">Max Person {{ room.roomCapacity }}</p>
+                            </div>
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <h1 class="w-1/2">Bed:</h1>
+                                <p class="w-1/2">{{ room.roomBed }}</p>
+                            </div>
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <h1 class="w-1/2">Bathroom:</h1>
+                                <p class="w-1/2">{{ room.roomBathroom }}</p>
+                            </div>
+                            <div v-if="room.keyFeatures" class="flex font-inter text-sm text-gray-500">
+                                <h1 class="w-1/2">Key Features:</h1>
+                                <p class="w-1/2">{{ room.roomKeyFeature }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-auto flex justify-end gap-x-3">
+                            <button class="border border-custom-primary text-custom-primary w-1/3 py-1 uppercase rounded hover:shadow">Details</button>
+                            <button class="bg-custom-primary w-1/3 py-1 text-white uppercase rounded hover:shadow" @click="bookRoom(room.isAvailable, room.id)">Book</button>
                         </div>
                     </div>
                 </div>
-                <div>
+            </div>
+            <div v-else-if="!loadingRooms && !filteredRooms.length">
+                <p class="text-lg uppercase font-inter">No available rooms</p>
+            </div>
+            <div v-else-if="loadingRooms" class="w-full max-w-6xl grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10">
+                <div v-for="i in 6" :key="i" class="flex flex-col h-full rounded-t overflow-hidden shadow">
+                    <!-- img -->
+                    <div>
+                        <div class="w-full aspect-video object-cover bg-gray-200 animate-pulse">
 
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-y-2 p-5 border h-full">
+                        <div class="h-10 w-1/2 bg-gray-200 rounded animate-pulse"></div>
+                        <div class="h-10 w-1/2 bg-gray-200 rounded animate-pulse"></div>
+                        <div class="space-y-3 mt-2">
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                            </div>
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                            </div>
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                            </div>
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                            </div>
+                            <div class="flex font-inter text-sm text-gray-500">
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                                <div class="w-1/2 h-6 bg-gray-200 animate-pulse rounded"></div>
+                            </div>
+                        </div>
+                        <div class="mt-auto flex justify-end gap-x-3">
+                            <div class="w-1/3 h-6 bg-gray-200 animate-pulse rounded"></div>
+                            <div class="w-1/3 h-6 bg-gray-200 animate-pulse rounded"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="noBookingDetails" class="fixed top-0 left-0 w-screen h-screen bg-black/25 z-[1000] flex items-center justify-center">
+            <div class="bg-white w-full max-w-sm p-5 h-fit rounded-md font-inter space-y-3">
+                <h1 class="text-center text-xl capitalize mb-2">Enter booking details</h1>
+                <div class="flex flex-col gap-y-1">
+                    <label>Check In</label>
+                    <input type="date" class="h-8 px-2 rounded border" v-model="checkIn">
+                </div>
+                <div class="flex flex-col gap-y-1">
+                    <label>Check Out</label>
+                    <input type="date" class="h-8 px-2 rounded border" v-model="checkOut">
+                </div>
+                <div class="flex flex-col gap-y-1">
+                    <label>Guests</label>
+                    <input type="text" class="h-8 px-2 rounded border" v-model="guests">
+                </div>
+                <div class="flex justify-end gap-x-2">
+                    <button class="w-1/3 border border-custom-primary text-custom-primary rounded" @click="noBookingDetails = false">Cancel</button>
+                    <button class="w-1/3 bg-custom-primary text-white rounded" @click="bookRoom(isAvailableRoom, roomIdToBook)">Book</button>
                 </div>
             </div>
         </div>
@@ -35,5 +143,104 @@
 </template>
 
 <script setup>
+import { computed, onMounted, ref, defineEmits } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { db } from '../config/firebaseConfig'
+import { collection, getDocs } from 'firebase/firestore'
+import { useAuthStore } from '../store'
 
+const authStore = useAuthStore()
+const isAuth = computed(() => authStore.isAuth)
+
+const emit = defineEmits(['signIn'])
+
+onMounted(() => {
+    getRooms()
+})
+
+const route = useRoute()
+const router = useRouter()
+
+const checkIn = ref(route.query.checkIn || '')
+const checkOut = ref(route.query.checkOut || '')
+const guests = ref(route.query.guests || '')
+
+const checkingAvailabity = ref(false)
+
+const checkAvailability = () => {
+    router.push({
+        query: {
+            checkIn: checkIn.value,
+            checkOut: checkOut.value,
+            guests: guests.value
+        }
+    })
+}
+
+// room lists
+const loadingRooms = ref(false)
+const rooms = ref([])
+
+const getRooms = async () => {
+    try {
+        loadingRooms.value = true
+        const snapshots = await getDocs(
+            collection(db, 'rooms')
+        )
+
+        snapshots.docs.forEach(doc => {
+            rooms.value.push({
+                id: doc.id,
+                ...doc.data()
+            })
+        })
+    } catch (error) {
+        console.log(error)
+    } finally {
+        loadingRooms.value = false
+    }
+}
+
+const filteredRooms = () => {
+    if(!route.query.guests || !route.query.checkIn || !route.query.checkOut ) return rooms.value
+
+    const roomsFiltered = rooms.value.filter(room => room.roomCapacity >= route.query.guests && room.isAvailable )
+
+    return roomsFiltered
+}
+
+// book room 
+const noBookingDetails = ref(false)
+const isAvailableRoom = ref('')
+const roomIdToBook = ref('')
+const bookRoom = (isAvailable, roomId) => {
+    isAvailableRoom.value = isAvailable
+    roomIdToBook.value = roomId
+    if(!isAvailable) return alert('Room not available')
+
+    if(!isAuth.value) {
+        emit('signIn')
+        router.push({
+            query: {
+                signInRequired: true
+            }
+        })
+        return
+    }
+
+    if(!guests.value || !checkIn.value || !checkOut.value){
+        noBookingDetails.value = true
+        return
+    }
+
+    router.push({
+        name: 'checkOut',
+        query: {
+            id: roomId,
+            checkIn: checkIn.value,
+            checkOut: checkOut.value,
+            guests: guests.value,
+        }
+    })
+}
 </script>
