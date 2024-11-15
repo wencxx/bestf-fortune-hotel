@@ -4,7 +4,7 @@
     <div class="absolute left-0 top-0 w-screen h-[100dvh] bg-black/35 -z-10"></div>
     <Header class="sticky top-0" :isTargetVisible="targetIsVisible" @signIn="willSignIn = true" />
     <router-view @signIn="willSignIn = true"/>
-    <Footer v-if="$route.name !== 'checkOut'" />
+    <Footer v-if="$route.name !== 'checkOut' && $route.name !== 'profile' && $route.name !== 'profileInfo' && $route.name !== 'bookings'" />
     <Login class="fixed top-0 left-0" v-if="willSignIn" @closeModal="willSignIn = false" />
   </div>
 </template>

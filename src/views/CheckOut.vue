@@ -104,11 +104,21 @@
                 <button class="float-end bg-red-500 text-white px-4 rounded py-1" @click="showGcash = false">Close</button>
             </div>
         </div>
+
+        <div v-if="bookingId" class="w-screen h-screen bg-black/30 z-50 fixed top-0 left-0 flex items-center justify-center px-5">
+            <div class="bg-white shadow border rounded-md w-full max-w-md h-fit p-4 relative flex flex-col items-center gap-y-5">
+                <Icon icon="ix:success-filled" class="text-7xl text-green-500" />
+                <h1 class="text-2xl uppercase">Booking Confirmed</h1>
+                <p class="w-11/12 text-center text-xl">Your reservation is confirmed. Thank you for choosing us!</p>
+                <p class="font-medium text-lg"><span class="uppercase">Booking Id:</span> <span class="text-neutral-500">{{ bookingId }}</span></p>
+                <router-link :to="{ name: 'rooms' }" class="bg-green-500 w-1/3 py-1 rounded mt-2 text-white text-center">OK</router-link>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { db } from '../config/firebaseConfig'
 import { addDoc, doc, getDoc, collection } from 'firebase/firestore'
@@ -133,6 +143,10 @@ onMounted(() => {
     checkOutDetails.value.email = currentUser.value?.email
     checkOutDetails.value.phone = currentUser.value?.phoneNumber || ''
     checkOutDetails.value.firstName = currentUser.value?.displayName.split(' ')[0] || ''
+})
+
+onUnmounted(() => {
+    bookingId.value  = ''
 })
 
 const checkOutDetails = ref({
@@ -186,6 +200,7 @@ const formatDate = (date) => {
 const err = ref(false)
 const failedCheckingOut = ref(false)
 const checkingOut = ref(false)
+const bookingId = ref('')
 
 const checkOut = async () => {
     failedCheckingOut.value = false
@@ -201,7 +216,8 @@ const checkOut = async () => {
 
         if(snapshot.empty) return failedCheckingOut.value = true
 
-        alert('check out successfully')
+        bookingId.value = snapshot.id
+
         checkOutDetails.value = {
             email: '',
             phone: '',
