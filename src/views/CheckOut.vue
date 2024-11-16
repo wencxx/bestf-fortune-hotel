@@ -94,7 +94,7 @@
         </div>
 
         <!-- gcash qr -->
-        <div v-if="showGcash" class="w-screen h-screen bg-white/30 fixed top-0 left-0 backdrop-blur-sm flex items-center justify-center px-5">
+        <div v-if="showGcash" class="w-screen h-screen bg-white/30 fixed top-0 left-0 backdrop-blur-sm flex items-center justify-center px-5 z-50">
             <div class="bg-white shadow border rounded-md w-full max-w-md h-fit p-4 relative">
                 <!-- <button class="absolute top-4 right-4 bg-gray-200 p-2 rounded-full" @click="downloadImage">
                     <Icon icon="mdi:download" class="text-xl" />
@@ -211,6 +211,7 @@ const checkOut = async () => {
         checkingOut.value = true
         const snapshot = await addDoc(collection(db, 'booking'), {
             ...checkOutDetails.value,
+            status: 'pending',
             userId: currentUser.value.uid
         })
 
