@@ -38,6 +38,11 @@
                         <textarea class="border rounded p-2 min-h-16" v-model="checkOutDetails.address"></textarea>
                     </div>
                 </div>
+                <h1 class="font-inter font-semibold text-md">Add Ons</h1>
+                <div class="flex flex-col gap-y-1">
+                        <label>Beds (₱500):</label>
+                        <input type="number" class="border rounded pl-2 h-8" v-model="checkOutDetails.beds" @change="addBeds">
+                </div>
                 <h1 class="font-inter font-semibold text-md">Payment</h1>
                 <div class="grid grid-cols-2 gap-5 w-full">
                     <div class="flex flex-col gap-y-1">
@@ -72,6 +77,10 @@
                     <div class="flex gap-x-1">
                         <label class="font-medium uppercase">Guests: </label>
                         <p>{{ checkOutDetails.guests }}</p>
+                    </div>
+                    <div v-if="checkOutDetails.beds > 0" class="flex gap-x-1">
+                        <label class="font-medium uppercase">Beds: </label>
+                        <p>{{ checkOutDetails.beds }}</p>
                     </div>
                     <div class="flex gap-x-1">
                         <label class="font-medium uppercase">Days: </label>
@@ -155,6 +164,7 @@ const checkOutDetails = ref({
     firstName: '',
     lastName: '',
     address: '',
+    beds: 0,
     mop: '',
     referenceNumber: '',
     roomName: '',
@@ -163,30 +173,38 @@ const checkOutDetails = ref({
     guests: route.query.guests || '',
     days: 0,
     roomPrice: 0,
-    totalPrice: 0
-});
+    totalPrice: 0,
+})
+
+const addBeds = () => {
+    checkOutDetails.value.totalPrice += checkOutDetails.value.beds * 500
+}
 
 const calculateDays = () => {
-    const oneDay = 24 * 60 * 60 * 1000;
+    const oneDay = 24 * 60 * 60 * 1000
     
-    const checkInDate = new Date(checkOutDetails.value.checkIn);
-    const checkOutDate = new Date(checkOutDetails.value.checkOut);
+    const checkInDate = new Date(checkOutDetails.value.checkIn)
+    const checkOutDate = new Date(checkOutDetails.value.checkOut)
 
-    if (isNaN(checkInDate) || isNaN(checkOutDate)) return 0;
+    if (isNaN(checkInDate) || isNaN(checkOutDate)) return 0
 
-    const diffDays = Math.round((checkOutDate - checkInDate) / oneDay);
-    
-    checkOutDetails.value.days = diffDays;
-    checkOutDetails.value.nights = diffDays > 0 ? diffDays - 1 : 0;
+    let diffDays = Math.round((checkOutDate - checkInDate) / oneDay)
 
-    return diffDays;
-};
+    if (diffDays === 0) {
+        diffDays = 1
+    }
 
-calculateDays();
+    checkOutDetails.value.days = diffDays
+
+    return diffDays
+}
+
+
+calculateDays()
 
 const formatCurrency = (price) => {
-    return `₱ ${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'PHP', currencyDisplay: 'code' }).format(Number(price)).replace('PHP', '')}`;
-};
+    return `₱ ${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'PHP', currencyDisplay: 'code' }).format(Number(price)).replace('PHP', '')}`
+}
 
 const formatDate = (date) => {
 
@@ -212,7 +230,8 @@ const checkOut = async () => {
         const snapshot = await addDoc(collection(db, 'booking'), {
             ...checkOutDetails.value,
             status: 'pending',
-            userId: currentUser.value.uid
+            userId: currentUser.value.uid,
+            bookedAt: new Date()
         })
 
         if(snapshot.empty) return failedCheckingOut.value = true
@@ -243,11 +262,11 @@ const checkOut = async () => {
 }
 
 const downloadImage = () => {
-  const link = document.createElement('a');
-  link.href = '@assets/Gcash QR.jpg';
-  link.download = 'Gcash QR.jpg';
-  link.click();
-};
+  const link = document.createElement('a')
+  link.href = '@assets/Gcash QR.jpg'
+  link.download = 'Gcash QR.jpg'
+  link.click()
+}
 
 // getroom details
 const room = ref({})

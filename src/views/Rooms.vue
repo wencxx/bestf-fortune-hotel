@@ -8,11 +8,11 @@
                 <div class="flex flex-col gap-y-5 p-5 lg:flex-row w-full bg-white lg:w-full h-fit lg:h-20 rounded font-light shadow overflow-hidden">
                     <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
                         <span class="text-lg font-medium">Check in</span>
-                        <input type="date" id="checkin" class="text-sm cursor-pointer focus:outline-none" v-model="checkIn">
+                        <input type="date" id="checkin" :min="minDate" class="text-sm cursor-pointer focus:outline-none" v-model="checkIn">
                     </div>
                     <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
                         <span class="text-lg font-medium">Check out</span>
-                        <input type="date" id="checkin" class="text-sm cursor-pointer focus:outline-none" v-model="checkOut">
+                        <input type="date" id="checkin" :min="minDate" class="text-sm cursor-pointer focus:outline-none" v-model="checkOut">
                     </div>
                     <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
                         <span class="text-lg font-medium">Guests</span>
@@ -68,7 +68,7 @@
                         </div>
                         <div class="mt-auto flex justify-end gap-x-3">
                             <button class="border border-custom-primary text-custom-primary w-1/3 py-1 uppercase rounded hover:shadow">Details</button>
-                            <button class="bg-custom-primary w-1/3 py-1 text-white uppercase rounded hover:shadow" @click="bookRoom(room.isAvailable, room.id)">Book</button>
+                            <button class="bg-custom-primary w-1/3 py-1 text-white uppercase rounded hover:shadow" @click="bookRoom(room.isAvailable, room.id, room.roomCapacity)">Book</button>
                         </div>
                     </div>
                 </div>
@@ -121,17 +121,18 @@
         <div v-if="noBookingDetails" class="fixed top-0 left-0 w-screen h-screen bg-black/25 z-[1000] flex items-center justify-center">
             <div class="bg-white w-full max-w-sm p-5 h-fit rounded-md font-inter space-y-3">
                 <h1 class="text-center text-xl capitalize mb-2">Enter booking details</h1>
+                <p v-if="passGuestsLimit" class="bg-red-500 pl-2 py-1 text-white rounded">Guests capacity exceeds</p>
                 <div class="flex flex-col gap-y-1">
                     <label>Check In</label>
-                    <input type="date" class="h-8 px-2 rounded border" v-model="checkIn">
+                    <input type="date" :min="minDate" class="h-8 px-2 rounded border" v-model="checkIn">
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <label>Check Out</label>
-                    <input type="date" class="h-8 px-2 rounded border" v-model="checkOut">
+                    <input type="date" :min="minDate" class="h-8 px-2 rounded border" v-model="checkOut">
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <label>Guests</label>
-                    <input type="text" class="h-8 px-2 rounded border" v-model="guests">
+                    <input type="number" class="h-8 px-2 rounded border" v-model="guests" @input="checkGuests">
                 </div>
                 <div class="flex justify-end gap-x-2">
                     <button class="w-1/3 border border-custom-primary text-custom-primary rounded" @click="noBookingDetails = false">Cancel</button>
@@ -139,10 +140,13 @@
                 </div>
             </div>
         </div>
+
+        <roomNotAvailableModal v-if="isNotRoomAvailable" @closeModal="isNotRoomAvailable = false" />
     </div>
 </template>
 
 <script setup>
+import roomNotAvailableModal from '../components/RoomNotAvailable.vue'
 import { computed, onMounted, ref, defineEmits } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { db } from '../config/firebaseConfig'
@@ -160,6 +164,8 @@ onMounted(() => {
 
 const route = useRoute()
 const router = useRouter()
+
+const minDate = new Date().toISOString().split('T')[0]
 
 const checkIn = ref(route.query.checkIn || '')
 const checkOut = ref(route.query.checkOut || '')
@@ -210,13 +216,19 @@ const filteredRooms = () => {
 }
 
 // book room 
+const isNotRoomAvailable = ref(false)
 const noBookingDetails = ref(false)
 const isAvailableRoom = ref('')
 const roomIdToBook = ref('')
-const bookRoom = (isAvailable, roomId) => {
+const roomCapacityToBook = ref('')
+
+const bookRoom = (isAvailable, roomId, roomCapacity) => {
     isAvailableRoom.value = isAvailable
     roomIdToBook.value = roomId
-    if(!isAvailable) return alert('Room not available')
+    roomCapacityToBook.value = roomCapacity
+    
+    if(!isAvailable) return isNotRoomAvailable.value = true
+    if(passGuestsLimit.value) return
 
     if(!isAuth.value) {
         emit('signIn')
@@ -242,5 +254,15 @@ const bookRoom = (isAvailable, roomId) => {
             guests: guests.value,
         }
     })
+}
+
+// check guests limit
+const passGuestsLimit = ref(false)
+const checkGuests = () => {
+    if(guests.value > roomCapacityToBook.value){
+        passGuestsLimit.value = true
+    }else{
+        passGuestsLimit.value = false
+    }
 }
 </script>

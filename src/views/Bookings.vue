@@ -6,61 +6,61 @@
             </div>
             <h1 class="font-medium text-xl flex items-center gap-x-2"><Icon icon="majesticons:book-line" class="text-3xl" /> Bookings</h1>
             <div class="w-full max-w-6xl bg-white p-5 rounded-xl overflow-x-auto">
-                <table class="w-full min-w-[600px]">
-                    <thead>
+                <table class="w-full min-w-[110%] rounded-md overflow-hidden">
+                    <thead class="bg-custom-primary text-white">
                         <tr>
-                            <th class="border w-2/12 border-black py-1">Booking Id</th>
-                            <th class="border w-2/12 border-black py-1">Room</th>
-                            <th class="border w-2/12 border-black py-1">Check In</th>
-                            <th class="border w-2/12 border-black py-1">Check Out</th>
-                            <th class="border w-1/12 border-black py-1">Days</th>
-                            <th class="border w-1/12 border-black py-1">Total Price</th>
-                            <th class="border w-1/12 border-black py-1">Status</th>
-                            <th class="border w-1/12 border-black py-1">Action</th>
+                            <th class="border w-2/12 py-2">Booking Id</th>
+                            <th class="border w-2/12 py-2">Room</th>
+                            <th class="border w-2/12 py-2">Check In</th>
+                            <th class="border w-2/12 py-2">Check Out</th>
+                            <th class="border w-1/12 py-2">Days</th>
+                            <th class="border w-1/12 py-2">Total Price</th>
+                            <th class="border w-1/12 py-2">Status</th>
+                            <th class="border w-1/12 py-2">Action</th>
                         </tr>
                     </thead>
                     <tbody v-if="loading">
                         <tr v-for="i in 5" :key="i">
-                            <td class="border border-black text-center py-1">
+                            <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
-                            <td class="border border-black text-center py-1">
+                            <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
-                            <td class="border border-black text-center py-1">
+                            <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
-                            <td class="border border-black text-center py-1">
+                            <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
-                            <td class="border border-black text-center py-1">
+                            <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
-                            <td class="border border-black text-center py-1">
+                            <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
-                            <td class="border border-black text-center py-1">
+                            <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
-                            <td class="border border-black text-center py-1">
+                            <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
                         </tr>
                     </tbody>
                     <tbody v-else-if="!loading && bookings.length">
-                        <tr v-for="(booking, index) in bookings" :key="booking.id">
-                            <td class="border border-black text-center py-1">{{ booking.id }}</td>
-                            <td class="border border-black text-center py-1">{{ booking.roomName }}</td>
-                            <td class="border border-black text-center py-1">{{ formatDate(booking.checkIn) }}</td>
-                            <td class="border border-black text-center py-1">{{ formatDate(booking.checkOut) }}</td>
-                            <td class="border border-black text-center py-1">{{ booking.days }} day(s)</td>
-                            <td class="border border-black text-center py-1">{{ formatCurrency(booking.totalPrice) }}</td>
-                            <td class="border border-black text-center py-1">
-                                <div class="text-white rounded w-4/5 mx-auto capitalize text-sm px-1 h-3/4" :class="{ 'bg-orange-500': booking.status === 'pending', 'bg-red-500': booking.status === 'canceled', 'bg-green-500': booking.status === 'accepted' }">
+                        <tr class="border" v-for="(booking, index) in bookings" :key="booking.id" :class="{ 'bg-gray-100': index % 2 === 0 }">
+                            <td class="text-center py-2">{{ booking.id }}</td>
+                            <td class="text-center py-2">{{ booking.roomName }}</td>
+                            <td class="text-center py-2">{{ formatDate(booking.checkIn) }}</td>
+                            <td class="text-center py-2">{{ formatDate(booking.checkOut) }}</td>
+                            <td class="text-center py-2">{{ booking.days }} day(s)</td>
+                            <td class="text-center py-2">{{ formatCurrency(booking.totalPrice) }}</td>
+                            <td class="text-center py-2">
+                                <div class="text-white rounded w-4/5 mx-auto capitalize text-sm px-1 h-3/4" :class="{ 'bg-orange-500': booking.status === 'pending', 'bg-red-500': booking.status === 'canceled', 'bg-green-500': booking.status === 'confirmed' }">
                                     {{ booking.status }}
                                 </div>
                             </td>
-                            <td class="border border-black text-center py-1">
+                            <td class="text-center py-2">
                                 <div v-if="booking.status !== 'canceled'">
                                     <button v-if="!cancelling" class="bg-red-500 px-3 text-white rounded text-sm h-3/4" @click="cancelBooking(booking.id, index)">Cancel</button>
                                     <button v-else class="bg-red-500 px-3 text-white rounded text-sm h-3/4" disabled>Cancelling</button>
@@ -70,7 +70,7 @@
                     </tbody>
                     <tbody v-else-if="!loading && bookings.length === 0">
                         <tr>
-                            <td colspan="8" class="border border-black text-center py-1">No bookings to show</td>
+                            <td colspan="8" class="text-center py-1">No bookings to show</td>
                         </tr>
                     </tbody>
                 </table>

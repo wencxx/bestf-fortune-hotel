@@ -8,11 +8,11 @@
             <div class="flex w-11/12 bg-white lg:w-2/5 h-20 rounded font-light shadow overflow-hidden">
                 <div class="w-1/4 flex flex-col items-center justify-center cursor-pointer">
                     <span>Check in</span>
-                    <input type="date" id="checkin" class="text-xs cursor-pointer focus:outline-none" v-model="checkInDate">
+                    <input type="date" :min="minDate" id="checkin" class="text-xs cursor-pointer focus:outline-none" v-model="checkInDate">
                 </div>
                 <div class="w-1/4 flex flex-col items-center justify-center cursor-pointer">
                     <span>Check out</span>
-                    <input type="date" id="checkin" class="text-xs cursor-pointer focus:outline-none" v-model="checkOutDate">
+                    <input type="date" :min="minDate" id="checkin" class="text-xs cursor-pointer focus:outline-none" v-model="checkOutDate">
                 </div>
                 <div class="w-1/4 flex flex-col items-center justify-center cursor-pointer">
                     guests
@@ -181,6 +181,8 @@ const router = useRouter()
 onMounted(() => {
     runSlider()
 })
+
+const minDate = new Date().toISOString().split('T')[0]
 
 const checkInDate = ref('')
 const checkOutDate = ref('')
