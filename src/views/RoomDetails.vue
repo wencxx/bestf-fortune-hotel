@@ -2,10 +2,10 @@
     <div class="bg-gray-100">
         <div class="w-full max-w-6xl mx-auto min-h-[90dvh] space-y-5">
             <div class="relative">
-                <img src="../assets/Semi-Double 1.jpg" alt="" class="aspect-video">
+                <img :src="roomDetails.thumbnailUrl" alt="" class="aspect-video">
                 <div class="absolute top-0 left-0 bg-black/10 w-full h-full"></div>
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[90%] border border-white flex items-end p-5">
-                    <h1 class="text-4xl font-serif text-white">Room Name</h1>
+                    <h1 class="text-4xl font-serif text-white">{{ roomDetails.roomName }}</h1>
                 </div>
                 <div class="hidden lg:flex items-center justify-center bg-white w-fit h-fit p-3 absolute left-1/2 translate-x-1/2 top-1/2 translate-y-1/2 mt-10 shadow rounded-md">
                     <div class="w-fit h-fit p-5 border flex flex-col gap-y-5 items-center border-custom-primary rounded">
@@ -27,17 +27,68 @@
                                 <Icon icon="skill-icons:instagram" class="text-xl mt-0.5" />
                             </div>
                         </div>
-                        <button class="bg-custom-primary text-white w-3/4 py-1 rounded">Book Now</button>
+                        <router-link :to="{ name: 'rooms' }" class="bg-custom-primary text-white w-3/4 py-1 rounded text-center">Book Now</router-link>
                     </div>
                 </div>
             </div>
             <div class="w-full p-5 text-center lg:text-justify lg:w-1/2 font-inter text-gray-500 text-sm tracking-wide">
-                <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.</p>
+                <p>{{ roomDetails.roomKeyFeatures }}</p>
+            </div>
+            <div class="h-fit w-full flex flex-col items-center gap-y-14 p-10 bg-gray-100">
+                <h1 class="font-serif text-2xl font-medium border-b-2 border-custom-primary">Room Amenities</h1>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 w-full max-w-6xl">
+                    <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
+                        <Icon icon="ion:bed-outline" class="text-4xl text-custom-primary" />
+                        <h1 class="text-xl">Bed</h1>
+                        <p class="text-center  text-gray-500">{{ roomDetails.roomBed }}</p>
+                    </div>
+                    <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
+                        <Icon icon="material-symbols:wifi"  class="text-4xl text-custom-primary" />
+                        <h1 class="text-xl">Internet Connection</h1>
+                        <p class="text-center  text-gray-500">Free Wi-Fi in all rooms</p>
+                    </div>
+                    <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
+                        <Icon icon="solar:bath-linear"  class="text-4xl text-custom-primary" />
+                        <h1 class="text-xl">Bathroom</h1>
+                        <p class="text-center  text-gray-500">{{ roomDetails.roomBathroom }}</p>
+                    </div>
+                    <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
+                        <Icon icon="mingcute:air-condition-open-fill"  class="text-4xl text-custom-primary" />
+                        <h1 class="text-xl">Air Conditioning</h1>
+                        <p class="text-center  text-gray-500">Fully air-conditioned room</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
+import { db } from '../config/firebaseConfig'
+import { doc, getDoc } from 'firebase/firestore'
+import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
 
+const route = useRoute()
+
+onMounted(() => {
+    getRoomDetails()
+})
+
+
+// getDocs
+const roomDetails = ref({})
+
+const getRoomDetails = async () => {
+    try {
+        const snapshot = await getDoc(doc(db, 'rooms', route.params.id))
+
+        roomDetails.value = {
+            id: snapshot.id,
+            ...snapshot.data()
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
 </script>

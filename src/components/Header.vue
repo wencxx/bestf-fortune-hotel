@@ -11,7 +11,9 @@
                 <li>
                     <router-link class="px-3 py-1 rounded" :to="{ name: 'rooms' }" :class="{'!text-black': $route.path !== '/' }">Rooms</router-link>
                 </li>
-                <li :class="{'!text-black': $route.path !== '/' }">About</li>
+                <li :class="{'!text-black': $route.path !== '/' }">
+                    <router-link class="px-3 py-1 rounded" :to="{ name: 'about' }" :class="{'!text-black': $route.path !== '/' }">About</router-link>
+                </li>
                 <div class="ml-14">
                     <button v-if="!isAuth" class="!bg-custom-primary px-3 py-2 rounded text-white" @click="signIn">Sign in</button>
                     <div v-else class="relative flex items-center gap-x-2">
@@ -23,7 +25,7 @@
                             </div>
                         </button>
                         <div v-if="showMenu" class="absolute top-full rounded right-0 bg-gray-200 h-fit w-fit py-1 px-3 space-y-1">
-                            <router-link :to="{ name: 'profile' }" class="text-black flex items-center gap-x-1 !bg-transparent"><Icon class="text-lg" icon="mdi:user-outline" />Profile</router-link>
+                            <!-- <router-link :to="{ name: 'profile' }" class="text-black flex items-center gap-x-1 !bg-transparent"><Icon class="text-lg" icon="mdi:user-outline" />Profile</router-link> -->
                             <router-link :to="{ name: 'bookings' }" class="text-black flex items-center gap-x-1 !bg-transparent"><Icon class="text-lg" icon="material-symbols-light:book-outline" />Bookings</router-link>
                             <button class="text-black flex items-center gap-x-1" @click="logout"><Icon class="text-lg" icon="material-symbols-light:logout-rounded" />Logout</button>
                         </div>
@@ -73,7 +75,7 @@ const showMenu = ref(false)
 </script>
 <style scope>
 .router-link-active {
-    background-color: yellow;
+    background-color: #e5e7eb;
     color: black;
 }
 </style>

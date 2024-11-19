@@ -60,7 +60,7 @@
             </div>
         </div>
         <!-- promos -->
-        <div class="h-fit w-full flex flex-col items-center gap-y-14 p-10">
+        <div v-if="promos.length" class="h-fit w-full flex flex-col items-center gap-y-14 p-10">
             <h1 class="font-serif text-2xl font-medium border-b-2 border-custom-primary">Our Promos</h1>
             <div v-for="promo in promos" :key="promo.id" class="grid w-full max-w-6xl gap-3" :class="{ 'md:grid-cols-2 lg:grid-cols-4': promo.imagesUrls.length > 4, 'md:grid-cols-2 lg:grid-cols-3': promo.imagesUrls.length === 3, 'lg:grid-cols-2': promo.imagesUrls.length === 2 }">
                 <p class="col-span-full text-center mb-5 font-serif text-xl">{{ promo.description || 'Unwind in the heart of Manila with our exclusive promo designed for those who seek comfort, elegance, and exceptional hospitality.' }}</p>
