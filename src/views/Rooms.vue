@@ -67,7 +67,7 @@
                             </div>
                         </div>
                         <div class="mt-auto flex justify-end gap-x-3">
-                            <button class="border border-custom-primary text-custom-primary w-1/3 py-1 uppercase rounded hover:shadow">Details</button>
+                            <router-link :to="{ name: 'roomDetails', params: { id: room.id } }" class="border border-custom-primary text-center !bg-transparent !text-custom-primary w-1/3 py-1 uppercase rounded hover:shadow">Details</router-link>
                             <button class="bg-custom-primary w-1/3 py-1 text-white uppercase rounded hover:shadow" @click="bookRoom(room.isAvailable, room.id, room.roomCapacity)">Book</button>
                         </div>
                     </div>

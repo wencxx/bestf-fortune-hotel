@@ -34,7 +34,7 @@
             </div>
         </div>
         <!-- ameneties -->
-        <div class="h-fit w-full flex flex-col items-center gap-y-14 p-10">
+        <div class="h-fit w-full flex flex-col items-center gap-y-14 p-10 bg-gray-100">
             <h1 class="font-serif text-2xl font-medium border-b-2 border-custom-primary">Our Amenities</h1>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 w-full max-w-6xl">
                 <div class="w-full h-48 flex flex-col items-center p-5 space-y-4">
@@ -57,6 +57,14 @@
                     <h1 class="text-xl">Air Conditioning</h1>
                     <p class="text-center  text-gray-500">Fully air-conditioned rooms</p>
                 </div>
+            </div>
+        </div>
+        <!-- promos -->
+        <div class="h-fit w-full flex flex-col items-center gap-y-14 p-10">
+            <h1 class="font-serif text-2xl font-medium border-b-2 border-custom-primary">Our Promos</h1>
+            <div v-for="promo in promos" :key="promo.id" class="grid w-full max-w-6xl gap-3" :class="{ 'md:grid-cols-2 lg:grid-cols-4': promo.imagesUrls.length > 4, 'md:grid-cols-2 lg:grid-cols-3': promo.imagesUrls.length === 3, 'lg:grid-cols-2': promo.imagesUrls.length === 2 }">
+                <p class="col-span-full text-center mb-5 font-serif text-xl">{{ promo.description || 'Unwind in the heart of Manila with our exclusive promo designed for those who seek comfort, elegance, and exceptional hospitality.' }}</p>
+                <img v-for="img in promo.imagesUrls" :key="img" :src="img" alt="promo images" class="rounded w-full aspect-auto">
             </div>
         </div>
         <!-- about us -->
@@ -175,11 +183,14 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { db } from '../config/firebaseConfig'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 
 const router = useRouter()
 
 onMounted(() => {
     runSlider()
+    getPromos()
 })
 
 const minDate = new Date().toISOString().split('T')[0]
@@ -222,5 +233,31 @@ const runSlider = () => {
         if(currentShowing.value + 1 === testimonials.value.length) return currentShowing.value = 0
         currentShowing.value++ 
     }, 3000)
+}
+
+// get promos
+const promos = ref([])
+
+const promosRef = collection(db, 'promos')
+
+const getPromos = async () => {
+    try {
+        const today = new Date().toISOString().split('T')[0]
+        const q = query(
+            promosRef,
+            where('end', '>', today)
+        )
+
+        const snapshots = await getDocs(q)
+
+        snapshots.docs.forEach(doc => {
+            promos.value.push({
+                id: doc.id,
+                ...doc.data()
+            })
+        })
+    } catch (error) {
+        
+    }
 }
 </script>
