@@ -177,6 +177,28 @@
                 </div>
             </div>
         </div>
+        <!-- Frequently askeds questions -->
+        <div class="h-fit w-full flex flex-col items-center gap-y-14 p-10">
+            <h1 class="font-serif text-2xl font-medium border-b-2 border-custom-primary">Frequently Asked Questions (FAQs)</h1>
+            <!-- Accordion Item 1 -->
+           <div class="w-full max-w-6xl">
+                <div v-for="(faq, index) in FAQS" :key="index" class="border-b border-slate-200">
+                    <button @click="toggleAccordion(index)" class="w-full flex justify-between items-center py-5 text-slate-800">
+                        <span class="text-lg">{{ faq.question }}</span>
+                        <span :id="`icon-${index}`" class="text-slate-800 transition-transform duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-5 h-5">
+                                <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
+                            </svg>
+                        </span>
+                    </button>
+                    <div :id="`content-${index}`" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+                        <div class="pb-5 text-slate-500">
+                            {{ faq.answer }}
+                        </div>
+                    </div>
+                </div>
+           </div>
+        </div>
     </div>
 </template>
 
@@ -257,7 +279,63 @@ const getPromos = async () => {
             })
         })
     } catch (error) {
-        
+        console.log(error)
+    }
+}
+
+const FAQS = ref([
+  {
+    question: 'What types of rooms are available?',
+    answer: 'We offer a variety of room types to suit different preferences, including [list room types, e.g., standard, deluxe, suites]. Each room is designed for your comfort and convenience.'
+  },
+  {
+    question: 'Do the rooms have Wi-Fi?',
+    answer: 'Yes, all rooms and public areas in our hotel are equipped with complimentary Wi-Fi for your convenience.'
+  },
+  {
+    question: 'What amenities are available at the hotel?',
+    answer: 'While we don’t currently offer additional on-site amenities, our focus is on providing clean, comfortable, and affordable accommodations.'
+  },
+  {
+    question: 'Do you provide room service?',
+    answer: 'Yes, room service is available during [insert specific hours, e.g., 7:00 AM to 10:00 PM]. Enjoy a selection of meals and snacks delivered directly to your room.'
+  },
+  {
+    question: 'Do you have on-site restaurants?',
+    answer: 'We do not have an on-site restaurant, but there are several excellent dining options within walking distance of the hotel. Our staff will be happy to recommend nearby restaurants.'
+  },
+  {
+    question: 'What safety measures are in place at the hotel?',
+    answer: 'Your safety is our priority. Our hotel is equipped with [list safety features, e.g., 24/7 security, CCTV surveillance, and smoke detectors].'
+  },
+  {
+    question: 'What should I do in case of an emergency?',
+    answer: 'Please contact the front desk immediately for assistance. Evacuation routes and emergency instructions are clearly displayed in every room for your reference.'
+  }
+])
+
+const toggleAccordion = (index) => {
+    const content = document.getElementById(`content-${index}`);
+    const icon = document.getElementById(`icon-${index}`);
+
+    const minusSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+        <path d="M3.75 7.25a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5h-8.5Z" />
+        </svg>
+    `;
+
+    const plusSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+        <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z" />
+        </svg>
+    `;
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        content.style.maxHeight = '0';
+        icon.innerHTML = plusSVG;
+    } else {
+        content.style.maxHeight = content.scrollHeight + 'px';
+        icon.innerHTML = minusSVG;
     }
 }
 </script>
