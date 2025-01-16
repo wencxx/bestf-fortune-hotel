@@ -275,6 +275,7 @@ const checkOut = async () => {
         const snapshot = await addDoc(collection(db, 'booking'), {
             ...checkOutDetails.value,
             number: roomDetails.value.roomNumber,
+            roomNumberId: roomDetails.value.id,
             status: 'pending',
             userId: currentUser.value.uid,
             bookedAt: new Date()
@@ -288,6 +289,13 @@ const checkOut = async () => {
         if(snapshot.empty) return failedCheckingOut.value = true
 
         bookingId.value = snapshot.id
+
+        addDoc(collection(db, 'notifications'), {
+            notif: `New Booking: A new booking has been made with Booking ID ${bookingId.value}.`,
+            isRead: false,
+            isView: false,
+            notifiedAt: new Date()
+        })
 
         checkOutDetails.value = {
             email: '',
