@@ -38,6 +38,23 @@
                         <textarea class="border rounded p-2 min-h-16" v-model="checkOutDetails.address"></textarea>
                     </div>
                 </div>
+                <h1 class="font-inter font-semibold text-md">Choose Room</h1>
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="flex flex-col gap-y-1">
+                        <label>Room Floor:</label>
+                        <select class="border rounded pl-2 h-8" v-model="checkOutDetails.floor">
+                            <option value="" disabled>Select Floor</option>
+                            <option v-for="room in rooms" :key="room.id">{{ room.roomFloor }}</option>
+                        </select>
+                    </div>
+                    <div v-if="checkOutDetails.floor" class="flex flex-col gap-y-1">
+                        <label>Select Available Room:</label>
+                        <select class="border rounded pl-2 h-8" v-model="checkOutDetails.number">
+                            <option value="" disabled>Select Room</option>
+                            <option v-for="room in filteredRoomNumber()" :key="room.id">{{ room.roomNumber }}</option>
+                        </select>
+                    </div>
+                </div>
                 <h1 class="font-inter font-semibold text-md">Add Ons</h1>
                 <div class="flex flex-col gap-y-1">
                         <label>Beds (₱500):</label>
@@ -186,6 +203,8 @@ const checkOutDetails = ref({
     firstName: '',
     lastName: '',
     address: '',
+    floor: '',
+    number: '',
     beds: 0,
     mop: '',
     referenceNumber: '',
@@ -266,6 +285,9 @@ const checkOut = async () => {
             firstName: '',
             lastName: '',
             address: '',
+            floor: '',
+            number: '',
+            beds: 0,
             mop: '',
             referenceNumber: '',
             roomName: '',
@@ -306,6 +328,8 @@ const getRoomDetails = async () => {
             ...snapshot.data()
         }
 
+        getRooms()
+
         checkOutDetails.value.roomName = snapshot.data().roomName
         checkOutDetails.value.roomPrice = snapshot.data().roomPrice
         checkOutDetails.value.totalPrice = snapshot.data().roomPrice * checkOutDetails.value.days || 0
@@ -314,5 +338,31 @@ const getRoomDetails = async () => {
     } finally {
         loading.value = false
     }
+}
+
+const rooms = ref([])
+
+const getRooms = async () => {
+    try {
+         const q = query(
+            collection(db, 'roomNumbers'),
+            where('roomType', '==', route.query?.id),
+        )
+
+        const snapshots = await getDocs(q)
+
+        snapshots.docs.forEach(doc => {
+            rooms.value.push({
+                id: doc.id,
+                ...doc.data()
+            })
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const filteredRoomNumber = () => {
+    return rooms.value.filter(room => room.roomFloor === checkOutDetails.value?.floor && room.roomStatus === 'Available')
 }
 </script>

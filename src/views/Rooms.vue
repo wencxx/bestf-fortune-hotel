@@ -39,7 +39,7 @@
                     <!-- img -->
                     <div class="relative">
                         <img :src="room.thumbnailUrl" alt="deluxe" class="w-full aspect-video object-cover">
-                        <p v-if="!room.isAvailable" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-500 px-3 py-1 rounded text-white uppercase text-sm">Not available</p>
+                        <p v-if="!hasAvailableRooms(room.id)" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-500 px-3 py-1 rounded text-white uppercase text-sm">Not available</p>
                     </div>
                     <div class="flex flex-col gap-y-2 p-5 border h-full">
                         <h1 class="font-serif font-light tracking-wide text-2xl">{{ room.roomName }}</h1>
@@ -68,7 +68,7 @@
                         </div>
                         <div class="mt-auto flex justify-end gap-x-3">
                             <router-link :to="{ name: 'roomDetails', params: { id: room.id } }" class="border border-custom-primary text-center !bg-transparent !text-custom-primary w-1/3 py-1 uppercase rounded hover:shadow">Details</router-link>
-                            <button class="bg-custom-primary w-1/3 py-1 text-white uppercase rounded hover:shadow" @click="bookRoom(room.isAvailable, room.id, room.roomCapacity)">Book</button>
+                            <button class="bg-custom-primary w-1/3 py-1 text-white uppercase rounded hover:shadow" @click="bookRoom(room.id, room.roomCapacity)">Book</button>
                         </div>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
                 </div>
                 <div class="flex justify-end gap-x-2">
                     <button class="w-1/3 border border-custom-primary text-custom-primary rounded" @click="noBookingDetails = false">Cancel</button>
-                    <button class="w-1/3 bg-custom-primary text-white rounded" @click="bookRoom(isAvailableRoom, roomIdToBook)">Book</button>
+                    <button class="w-1/3 bg-custom-primary text-white rounded" @click="bookRoom(roomIdToBook)">Book</button>
                 </div>
             </div>
         </div>
@@ -159,6 +159,7 @@ const isAuth = computed(() => authStore.isAuth)
 const emit = defineEmits(['signIn'])
 
 onMounted(() => {
+    getRoomTypes()
     getRooms()
 })
 
@@ -183,11 +184,11 @@ const checkAvailability = () => {
     })
 }
 
-// room lists
+// room type lists
 const loadingRooms = ref(false)
 const rooms = ref([])
 
-const getRooms = async () => {
+const getRoomTypes = async () => {
     try {
         loadingRooms.value = true
         const snapshots = await getDocs(
@@ -215,19 +216,44 @@ const filteredRooms = () => {
     return roomsFiltered
 }
 
+// get room numbers
+const roomNumbers = ref([])
+const getRooms = async () => {
+    try {
+        const snapshots = await getDocs(
+            collection(db, 'roomNumbers')
+        )
+
+        snapshots.docs.forEach(doc => {
+            roomNumbers.value.push({
+                id: doc.id,
+                ...doc.data()
+            })
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const hasAvailableRooms = (roomType) => {
+    const room = roomNumbers.value.filter(room => room.roomType === roomType)
+
+    if(room.length) return true
+
+    return false
+}
+
 // book room 
 const isNotRoomAvailable = ref(false)
 const noBookingDetails = ref(false)
-const isAvailableRoom = ref('')
 const roomIdToBook = ref('')
 const roomCapacityToBook = ref('')
 
-const bookRoom = (isAvailable, roomId, roomCapacity) => {
-    isAvailableRoom.value = isAvailable
+const bookRoom = (roomId, roomCapacity) => {
     roomIdToBook.value = roomId
     roomCapacityToBook.value = roomCapacity
     
-    // if(!isAvailable) return isNotRoomAvailable.value = true
+    if(!hasAvailableRooms(roomId)) return isNotRoomAvailable.value = true
     if(passGuestsLimit.value) return
 
     if(!isAuth.value) {
