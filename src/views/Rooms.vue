@@ -227,7 +227,7 @@ const bookRoom = (isAvailable, roomId, roomCapacity) => {
     roomIdToBook.value = roomId
     roomCapacityToBook.value = roomCapacity
     
-    if(!isAvailable) return isNotRoomAvailable.value = true
+    // if(!isAvailable) return isNotRoomAvailable.value = true
     if(passGuestsLimit.value) return
 
     if(!isAuth.value) {

@@ -20,7 +20,7 @@
                         <p :class="{'!text-black': $route.path !== '/' }">Hi, {{ currentUser?.displayName.split(' ')[0] }}</p>
                         <button @click="showMenu = !showMenu">
                             <img v-if="currentUser?.photoURL" :src="currentUser?.photoURL" alt="profile picture" class="w-8 aspect-square rounded-full">
-                            <div v-else class="bg-gray-100 w-8 aspect-square rounded-full capitalize flex items-center justify-center text-black">
+                            <div v-else class="bg-gray-100 w-8 aspect-square rounded-full capitalize flex items-center justify-center text-black" :class="{ '!bg-gray-300': $route.name !== 'home' }">
                                 <p>{{ currentUser?.displayName?.split('')[0] }}</p>
                             </div>
                         </button>

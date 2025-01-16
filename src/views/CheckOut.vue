@@ -130,7 +130,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { db } from '../config/firebaseConfig'
-import { addDoc, doc, getDoc, collection } from 'firebase/firestore'
+import { addDoc, doc, getDoc, getDocs, collection, query, where, limit } from 'firebase/firestore'
 import { useAuthStore } from '../store'
 import moment from 'moment'
 
@@ -142,21 +142,43 @@ const route = useRoute()
 const showGcash = ref(false)
 
 watch(currentUser, () => {
-    checkOutDetails.value.email = currentUser.value?.email
-    checkOutDetails.value.phone = currentUser.value?.phoneNumber || ''
-    checkOutDetails.value.firstName = currentUser.value?.displayName.split(' ')[0] || ''
+    getUserDetails()
 })
 
 onMounted(() => {
+    getUserDetails()
     getRoomDetails()
-    checkOutDetails.value.email = currentUser.value?.email
-    checkOutDetails.value.phone = currentUser.value?.phoneNumber || ''
-    checkOutDetails.value.firstName = currentUser.value?.displayName.split(' ')[0] || ''
 })
 
 onUnmounted(() => {
     bookingId.value  = ''
 })
+
+const userDetails = ref({})
+
+const getUserDetails = async () => {
+    try {
+        const q = query(
+            collection(db, 'users'),
+            where('userId', '==', currentUser.value?.uid),
+            limit(1)
+        )
+        const snapshot = await getDocs(q)
+
+        userDetails.value = {
+            id: snapshot.docs[0].id,
+            ...snapshot.docs[0].data()
+        }
+
+        checkOutDetails.value.email = userDetails.value?.email || currentUser.value?.email
+        checkOutDetails.value.phone = userDetails.value?.phoneNumber || ''
+        checkOutDetails.value.firstName = userDetails.value?.firstName || currentUser.value?.displayName.split(' ')[0]
+        checkOutDetails.value.lastName = userDetails.value?.lastName || currentUser.value?.displayName.split(' ')[1]
+        checkOutDetails.value.address = userDetails.value?.address || ''
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 const checkOutDetails = ref({
     email: '',
