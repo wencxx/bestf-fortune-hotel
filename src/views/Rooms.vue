@@ -236,7 +236,7 @@ const getRooms = async () => {
 }
 
 const hasAvailableRooms = (roomType) => {
-    const room = roomNumbers.value.filter(room => room.roomType === roomType)
+    const room = roomNumbers.value.filter(room => room.roomType === roomType && room.roomStatus === 'Available')
 
     if(room.length) return true
 

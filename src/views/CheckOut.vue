@@ -49,9 +49,9 @@
                     </div>
                     <div v-if="checkOutDetails.floor" class="flex flex-col gap-y-1">
                         <label>Select Available Room:</label>
-                        <select class="border rounded pl-2 h-8" v-model="checkOutDetails.number">
-                            <option value="" disabled>Select Room</option>
-                            <option v-for="room in filteredRoomNumber()" :key="room.id">{{ room.roomNumber }}</option>
+                        <select class="border rounded pl-2 h-8" v-model="roomDetails">
+                            <option :value="{}" disabled>Select Room</option>
+                            <option v-for="room in filteredRoomNumber()" :key="room.id" :value="room">{{ room.roomNumber }}</option>
                         </select>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { db } from '../config/firebaseConfig'
-import { addDoc, doc, getDoc, getDocs, collection, query, where, limit } from 'firebase/firestore'
+import { addDoc, doc, getDoc, getDocs, collection, query, where, limit, updateDoc } from 'firebase/firestore'
 import { useAuthStore } from '../store'
 import moment from 'moment'
 
@@ -204,7 +204,6 @@ const checkOutDetails = ref({
     lastName: '',
     address: '',
     floor: '',
-    number: '',
     beds: 0,
     mop: '',
     referenceNumber: '',
@@ -216,6 +215,8 @@ const checkOutDetails = ref({
     roomPrice: 0,
     totalPrice: 0,
 })
+
+const roomDetails = ref({})
 
 const addBeds = () => {
     checkOutDetails.value.totalPrice += checkOutDetails.value.beds * 500
@@ -264,15 +265,24 @@ const bookingId = ref('')
 const checkOut = async () => {
     failedCheckingOut.value = false
     err.value = false
-    if(Object.values(checkOutDetails.value).some(field => !field)) return err.value = true
+    if (Object.values(checkOutDetails.value).some(field => field === undefined || field === null || field === "")) {
+        err.value = true;
+    }
+
 
     try {
         checkingOut.value = true
         const snapshot = await addDoc(collection(db, 'booking'), {
             ...checkOutDetails.value,
+            number: roomDetails.value.roomNumber,
             status: 'pending',
             userId: currentUser.value.uid,
             bookedAt: new Date()
+        })
+
+
+        await updateDoc(doc(db, 'roomNumbers', roomDetails.value.id), {
+            roomStatus: 'Unavailable'
         })
 
         if(snapshot.empty) return failedCheckingOut.value = true
@@ -286,7 +296,6 @@ const checkOut = async () => {
             lastName: '',
             address: '',
             floor: '',
-            number: '',
             beds: 0,
             mop: '',
             referenceNumber: '',
@@ -298,6 +307,8 @@ const checkOut = async () => {
             roomPrice: 0,
             totalPrice: 0
         }
+
+        roomDetails.value = {}
     } catch (error) {
         console.log(error)   
     } finally {

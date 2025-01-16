@@ -21,7 +21,7 @@ Bookings
 -Dapat nauuna yung Booking ID, bago Name sa table. - DONE
 
 Rooms
-- Rooms are automatically Occupied when Booked by the customers 
+- Rooms are automatically Occupied when Booked by the customers  - DONE
 - Room Name palitan ng Room Type - DONE
 
 Promos
