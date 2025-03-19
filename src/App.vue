@@ -52,38 +52,6 @@ const signIn = () => {
   willSignUp.value = false
   willSignIn.value = true
 }
-
-
-const FAQS = ref([
-  {
-    question: 'What types of rooms are available?',
-    answer: 'We offer a variety of room types to suit different preferences, including [list room types, e.g., standard, deluxe, suites]. Each room is designed for your comfort and convenience.'
-  },
-  {
-    question: 'Do the rooms have Wi-Fi?',
-    answer: 'Yes, all rooms and public areas in our hotel are equipped with complimentary Wi-Fi for your convenience.'
-  },
-  {
-    question: 'What amenities are available at the hotel?',
-    answer: 'While we don’t currently offer additional on-site amenities, our focus is on providing clean, comfortable, and affordable accommodations.'
-  },
-  {
-    question: 'Do you provide room service?',
-    answer: 'Yes, room service is available during [insert specific hours, e.g., 7:00 AM to 10:00 PM]. Enjoy a selection of meals and snacks delivered directly to your room.'
-  },
-  {
-    question: 'Do you have on-site restaurants?',
-    answer: 'We do not have an on-site restaurant, but there are several excellent dining options within walking distance of the hotel. Our staff will be happy to recommend nearby restaurants.'
-  },
-  {
-    question: 'What safety measures are in place at the hotel?',
-    answer: 'Your safety is our priority. Our hotel is equipped with [list safety features, e.g., 24/7 security, CCTV surveillance, and smoke detectors].'
-  },
-  {
-    question: 'What should I do in case of an emergency?',
-    answer: 'Please contact the front desk immediately for assistance. Evacuation routes and emergency instructions are clearly displayed in every room for your reference.'
-  }
-])
 </script>
 
 <style scoped>

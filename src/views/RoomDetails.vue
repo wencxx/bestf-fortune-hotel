@@ -59,6 +59,15 @@
                     </div>
                 </div>
             </div>
+            <div v-if="roomDetails?.imagesUrls?.length" class="h-fit w-full flex flex-col items-center gap-y-14 p-10 bg-gray-100">
+                <h1 class="font-serif text-2xl font-medium border-b-2 border-custom-primary">Room Images</h1>
+                <div class="grid grid-cols-4 gap-2">
+                    <div v-for="(image, index) in roomDetails.imagesUrls" :key="image" @click="openImageViewer(index)">
+                        <img :src="image" alt="room image" class="w-full aspect-square rounded cursor-pointer">
+                    </div>
+                </div>
+            </div>
+            <ImageViewer v-if="isViewerOpen" :images="roomDetails.imagesUrls" :startIndex="currentImageIndex" @close="closeImageViewer" />
         </div>
     </div>
 </template>
@@ -68,6 +77,7 @@ import { db } from '../config/firebaseConfig'
 import { doc, getDoc } from 'firebase/firestore'
 import { useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import ImageViewer from '../components/ImageViewer.vue' // Import the ImageViewer component
 
 const route = useRoute()
 
@@ -75,9 +85,10 @@ onMounted(() => {
     getRoomDetails()
 })
 
-
 // getDocs
 const roomDetails = ref({})
+const isViewerOpen = ref(false)
+const currentImageIndex = ref(0)
 
 const getRoomDetails = async () => {
     try {
@@ -90,5 +101,14 @@ const getRoomDetails = async () => {
     } catch (error) {
         console.log(error)
     }
+}
+
+const openImageViewer = (index) => {
+    currentImageIndex.value = index
+    isViewerOpen.value = true
+}
+
+const closeImageViewer = () => {
+    isViewerOpen.value = false
 }
 </script>

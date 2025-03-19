@@ -107,10 +107,6 @@
                         <label class="font-medium uppercase">Room Price: </label>
                         <p>{{ formatCurrency(checkOutDetails.roomPrice) }}/per night</p>
                     </div>
-                    <div v-if="checkOutDetails.roomPromo" class="flex gap-x-1">
-                        <label class="font-medium uppercase">Room Promo: </label>
-                        <p>-{{ checkOutDetails.roomPromo }}%</p>
-                    </div>
                     <hr>
                     <div class="flex gap-x-1">
                         <label class="font-medium uppercase">Total Price: </label>
@@ -217,7 +213,6 @@ const checkOutDetails = ref({
     guests: route.query.guests || '',
     days: 0,
     roomPrice: 0,
-    roomPromo: 0,
     totalPrice: 0,
 })
 
@@ -355,13 +350,8 @@ const getRoomDetails = async () => {
         getRooms()
 
         checkOutDetails.value.roomName = snapshot.data().roomName
-        checkOutDetails.value.roomPrice = snapshot.data().roomPrice;
-        checkOutDetails.value.roomPromo = snapshot.data().roomPromo || 0;
-
-        const discount = (checkOutDetails.value.roomPrice * checkOutDetails.value.roomPromo) / 100;
-        const finalPrice = checkOutDetails.value.roomPrice - discount;
-
-        checkOutDetails.value.totalPrice = (finalPrice * checkOutDetails.value.days) || 0;
+        checkOutDetails.value.roomPrice = snapshot.data().roomPrice
+        checkOutDetails.value.totalPrice = snapshot.data().roomPrice * checkOutDetails.value.days || 0
     } catch (error) {
         console.log(error)
     } finally {

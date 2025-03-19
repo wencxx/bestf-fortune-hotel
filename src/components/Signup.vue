@@ -78,6 +78,17 @@ const signUp = async () => {
             return
         }
 
+        if (userDetails.value.phoneNumber.length !== 11) {
+            err.value = "Phone number must be 11 digits."
+            return
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailPattern.test(userDetails.value.email)) {
+            err.value = "Invalid email format."
+            return
+        }
+
         const userCredential = await createUserWithEmailAndPassword(
             auth,
             userDetails.value.email,
@@ -107,7 +118,11 @@ const signUp = async () => {
 
         emit('signIn')
     } catch (error) {
-        err.value = error.code
+        if (error.code === 'auth/email-already-in-use') {
+            err.value = 'Email is already in use.'
+        } else {
+            err.value = 'An error occurred. Please try again.'
+        }
         console.log(error)
     } finally {
         signingUp.value = false

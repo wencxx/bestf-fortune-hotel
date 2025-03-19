@@ -9,13 +9,15 @@
                 <table class="w-full min-w-[110%] rounded-md overflow-hidden">
                     <thead class="bg-custom-primary text-white">
                         <tr>
+                            <th class="border w-2/12 py-2">Book At</th>
                             <th class="border w-2/12 py-2">Booking Id</th>
                             <th class="border w-2/12 py-2">Room</th>
-                            <th class="border w-2/12 py-2">Check In</th>
-                            <th class="border w-2/12 py-2">Check Out</th>
+                            <th class="border w-1/12 py-2">Check In</th>
+                            <th class="border w-1/12 py-2">Check Out</th>
                             <th class="border w-1/12 py-2">Days</th>
                             <th class="border w-1/12 py-2">Total Price</th>
                             <th class="border w-1/12 py-2">Status</th>
+                            <th class="border w-1/12 py-2">Reason</th>
                             <th class="border w-1/12 py-2">Action</th>
                         </tr>
                     </thead>
@@ -45,10 +47,14 @@
                             <td class="border text-center py-2">
                                 <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
                             </td>
+                            <td class="border text-center py-2">
+                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
+                            </td>
                         </tr>
                     </tbody>
                     <tbody v-else-if="!loading && bookings.length">
                         <tr class="border" v-for="(booking, index) in bookings" :key="booking.id" :class="{ 'bg-gray-100': index % 2 === 0 }">
+                            <td class="text-center py-2">{{ formatFirebaseTimestamp(booking.bookedAt) }}</td>
                             <td class="text-center py-2">{{ booking.id }}</td>
                             <td class="text-center py-2">{{ booking.roomName }}</td>
                             <td class="text-center py-2">{{ formatDate(booking.checkIn) }}</td>
@@ -59,6 +65,9 @@
                                 <div class="text-white rounded w-4/5 mx-auto capitalize text-sm px-1 h-3/4" :class="{ 'bg-orange-500': booking.status === 'pending', 'bg-red-500': booking.status === 'canceled', 'bg-green-500': booking.status === 'confirmed' }">
                                     {{ booking.status }}
                                 </div>
+                            </td>
+                            <td class="text-center py-2">
+                                {{ booking.reasonForDeclining || 'N/A' }}
                             </td>
                             <td class="text-center py-2">
                                 <div v-if="booking.status !== 'canceled'">
@@ -81,7 +90,7 @@
 
 <script setup>
 import { db } from '../config/firebaseConfig'
-import { collection, getDocs, query, where, doc, updateDoc } from 'firebase/firestore'
+import { collection, getDocs, query, where, doc, updateDoc, addDoc } from 'firebase/firestore'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../store'
 import moment from 'moment'
@@ -136,9 +145,16 @@ const formatDate = (date) => {
     return moment(new Date(date)).format('ll')
 }
 
+function formatFirebaseTimestamp(firebaseTimestamp) {
+    const { seconds, nanoseconds } = firebaseTimestamp;
+    const milliseconds = seconds * 1000 + nanoseconds / 1e6;
+    return moment(milliseconds).format('lll');
+}
+
 // cancel booking
 const cancelledBooking = ref('')
 const cancelling = ref(false)
+const notifRef = collection(db, 'notifications')
 const cancelBooking = async (bookingId, index) => {
     try {
         cancelling.value = true
@@ -148,6 +164,13 @@ const cancelBooking = async (bookingId, index) => {
         })
 
         cancelledBooking.value = bookingId
+
+        await addDoc(notifRef, {
+            notif: `Booking Canceled: ${currentUser.value.displayName} canceled a booking.`,
+            isRead: false,
+            isView: false,
+            notifiedAt: new Date()
+        })
 
         setTimeout(() => {
             cancelledBooking.value = ''

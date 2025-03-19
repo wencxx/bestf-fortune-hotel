@@ -40,6 +40,9 @@
                     <div class="relative">
                         <img :src="room.thumbnailUrl" alt="deluxe" class="w-full aspect-video object-cover">
                         <p v-if="!hasAvailableRooms(room.id)" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-500 px-3 py-1 rounded text-white uppercase text-sm">Not available</p>
+                        <div v-if="room.roomPromo" class="bg-red-500 py-3 px-2 w-fit text-white rounded-full absolute top-5 right-5">
+                            <p class="font-bold">-{{ room.roomPromo }}%</p>
+                        </div>
                     </div>
                     <div class="flex flex-col gap-y-2 p-5 border h-full">
                         <h1 class="font-serif font-light tracking-wide text-2xl">{{ room.roomName }}</h1>
