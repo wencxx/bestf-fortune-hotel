@@ -56,6 +56,6 @@ const signIn = () => {
 
 <style scoped>
 .hero {
-  background-image: url('../src/assets/e77d83b6b413fcd4afe538137cb6a2bb.jpg');
+  background-image: url('../src/assets/newbg.jpg');
 }
 </style>
