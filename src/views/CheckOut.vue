@@ -380,11 +380,16 @@ const getRooms = async () => {
 
         const snapshots = await getDocs(q)
 
+        const floors = new Set()
         snapshots.docs.forEach(doc => {
-            rooms.value.push({
-                id: doc.id,
-                ...doc.data()
-            })
+            const roomData = doc.data()
+            if (!floors.has(roomData.roomFloor)) {
+                floors.add(roomData.roomFloor)
+                rooms.value.push({
+                    id: doc.id,
+                    ...roomData
+                })
+            }
         })
     } catch (error) {
         console.log(error)

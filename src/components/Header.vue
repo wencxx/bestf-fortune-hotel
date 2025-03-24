@@ -27,7 +27,7 @@
                         <div v-if="showMenu" class="absolute top-full rounded right-0 bg-gray-200 h-fit w-fit py-1 px-3 space-y-1">
                             <!-- <router-link :to="{ name: 'profile' }" class="text-black flex items-center gap-x-1 !bg-transparent"><Icon class="text-lg" icon="mdi:user-outline" />Profile</router-link> -->
                             <router-link :to="{ name: 'bookings' }" class="text-black flex items-center gap-x-1 !bg-transparent"><Icon class="text-lg" icon="material-symbols-light:book-outline" />Bookings</router-link>
-                            <router-link :to="{ name: 'bookings' }" class="text-black flex items-center gap-x-1 !bg-transparent"><Icon class="text-lg" icon="material-symbols-light:book-outline" />Notifications</router-link>
+                            <!-- <router-link :to="{ name: 'bookings' }" class="text-black flex items-center gap-x-1 !bg-transparent"><Icon class="text-lg" icon="material-symbols-light:book-outline" />Notifications</router-link> -->
                             <button class="text-black flex items-center gap-x-1" @click="logout"><Icon class="text-lg" icon="material-symbols-light:logout-rounded" />Logout</button>
                         </div>
                     </div>
