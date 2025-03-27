@@ -23,11 +23,12 @@
     <div class="mb-10 space-y-10">
         <p class="font-serif text-2xl text-center">Hotel Images</p>
         <div class="grid grid-cols-3 w-3/4 mx-auto gap-5">
-            <img src="../assets/about1.jpg" class="w-full aspect-square rounded" alt="about1">
-            <img src="../assets/about2.jpg" class="w-full aspect-square rounded" alt="about2">
+            <img src="../assets/bfh1.jpg" class="w-full aspect-square rounded" alt="bfh1">
+            <img src="../assets/bfh2.jpg" class="w-full aspect-square rounded" alt="bfh2">
+            <img src="../assets/bfh3.jpg" class="w-full aspect-square rounded" alt="bfh3">
+            <img src="../assets/bfh4.jpg" class="w-full aspect-square rounded" alt="bfh4">
+            <img src="../assets/bfh5.jpg" class="w-full aspect-square rounded" alt="bfh5">
             <img src="../assets/about3.jpg" class="w-full aspect-square rounded" alt="about3">
-            <img src="../assets/about4.jpg" class="w-full aspect-square rounded" alt="about4">
-            <img src="../assets/about5.jpg" class="w-full aspect-square rounded" alt="about5">
         </div>  
     </div>
   </div>
