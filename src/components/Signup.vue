@@ -78,11 +78,6 @@ const signUp = async () => {
             return
         }
 
-        if (userDetails.value.phoneNumber.length !== 10) {
-            err.value = "Phone number must be 10 digits."
-            return
-        }
-
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailPattern.test(userDetails.value.email)) {
             err.value = "Invalid email format."
