@@ -44,7 +44,7 @@
                         <label>Room Floor:</label>
                         <select class="border rounded pl-2 h-8" v-model="checkOutDetails.floor">
                             <option value="" disabled>Select Floor</option>
-                            <option v-for="room in rooms" :key="room.id">{{ room.roomFloor }}</option>
+                            <option v-for="floor in filteredFloors()" :key="floor">{{ floor }}</option>
                         </select>
                     </div>
                     <div v-if="checkOutDetails.floor" class="flex flex-col gap-y-1">
@@ -380,23 +380,34 @@ const getRooms = async () => {
 
         const snapshots = await getDocs(q)
 
-        const floors = new Set()
         snapshots.docs.forEach(doc => {
             const roomData = doc.data()
-            if (!floors.has(roomData.roomFloor)) {
-                floors.add(roomData.roomFloor)
-                rooms.value.push({
-                    id: doc.id,
-                    ...roomData
-                })
-            }
+     
+            rooms.value.push({
+                id: doc.id,
+                ...roomData
+            })
         })
-    } catch (error) {
+
+        } catch (error) {
         console.log(error)
     }
 }
 
 const filteredRoomNumber = () => {
     return rooms.value.filter(room => room.roomFloor === checkOutDetails.value?.floor && room.roomStatus === 'Available')
+}
+
+
+const filteredFloors = () => {
+    let floors = []
+    
+    for (const room of rooms.value) {
+        if (!floors.includes(room.roomFloor)) {
+            floors.push(room.roomFloor)
+        }
+    }
+
+    return floors
 }
 </script>
