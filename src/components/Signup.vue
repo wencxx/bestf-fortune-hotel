@@ -78,8 +78,8 @@ const signUp = async () => {
             return
         }
 
-        if (userDetails.value.phoneNumber.length !== 11) {
-            err.value = "Phone number must be 11 digits."
+        if (userDetails.value.phoneNumber.length !== 10) {
+            err.value = "Phone number must be 10 digits."
             return
         }
 
