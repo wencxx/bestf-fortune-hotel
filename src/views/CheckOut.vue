@@ -112,7 +112,7 @@
                         <p>-{{ checkOutDetails.roomPromo }}%</p>
                     </div>
                     <hr>
-                    <div class="flex gap-x-1">
+                    <div class="flex gap-x-1 bg-custom-primary text-white py-1 pl-2 rounded">
                         <label class="font-medium uppercase">Total Price: </label>
                         <p>{{ formatCurrency(checkOutDetails.totalPrice) }}</p>
                     </div>
