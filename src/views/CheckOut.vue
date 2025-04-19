@@ -71,7 +71,7 @@
                     </div>
                     <div class="flex flex-col gap-y-1" v-if="checkOutDetails.mop === 'GCASH'">
                         <label>Reference Number:</label>
-                        <input type="text" class="border rounded pl-2 h-8" v-model="checkOutDetails.referenceNumber">
+                        <input type="text" class="border rounded pl-2 h-8" v-model="checkOutDetails.referenceNumber" required>
                     </div>
                 </div>
                 <button v-if="!checkingOut" class="bg-green-500 px-3 py-1 float-end rounded text-white">Check out</button>
