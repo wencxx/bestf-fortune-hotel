@@ -205,7 +205,11 @@
           class="w-full lg:w-1/2 mx-auto"
         >
           <div v-if="currentShowing === index" class="space-y-10">
-            <p class="text-center text-sm">"{{ testi.testimonial }}"</p>
+            <p class="text-center text-lg">"{{ testi.testimonial }}"</p>
+            <!-- Display rating as stars -->
+            <div class="flex justify-center mb-2">
+              <Icon v-for="star in 5" :key="star" :icon="testi.rating >= star ? 'mdi:star' : 'mdi:star-outline'" class="text-2xl text-yellow-400" />
+            </div>
             <h2
               class="text-center font-medium font-inter tracking-wide capitalize text-gray-500"
             >
@@ -386,6 +390,12 @@
           class="border border-gray-300 rounded w-1/2 min-h-32 p-2"
           v-model="testimonial"
         ></textarea>
+        <!-- Star Rating Input -->
+        <div class="flex items-center gap-x-2">
+          <span v-for="star in 5" :key="star" @click="rating = star" class="cursor-pointer">
+            <Icon :icon="rating >= star ? 'mdi:star' : 'mdi:star-outline'" class="text-3xl text-yellow-400" />
+          </span>
+        </div>
         <button
           @click="submitTestimonials"
           class="bg-red-500 w-1/2 text-white rounded py-1 hover:bg-red-600"
@@ -405,6 +415,7 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "../store";
 import { db } from "../config/firebaseConfig";
 import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { Filter } from "bad-words";
 
 const store = useAuthStore();
 
@@ -532,20 +543,44 @@ const toggleAccordion = (index) => {
 };
 
 const testimonial = ref("");
+const rating = ref(0); // New: rating state
 const adding = ref(false);
 
 const testimonialsRef = collection(db, "testimonials");
 
+const customFilter = new Filter();
+
+const tagalogBadWords = [
+  "putangina",
+  "gago",
+  "tanga",
+  "ulol",
+  "leche",
+  "buwisit",
+  "hayop",
+  "siraulo",
+  "lintik",
+  "punyeta",
+  "bobo",
+  "boba",
+];
+
+customFilter.addWords(...tagalogBadWords);
+
 const submitTestimonials = async () => {
   try {
+    const cleanTestimonial = customFilter.clean(testimonial.value);
+
     adding.value = true;
     await addDoc(testimonialsRef, {
-      testimonial: testimonial.value,
+      testimonial: cleanTestimonial,
       user: currentUser?.value?.displayName,
+      rating: rating.value, // New: save rating
     });
 
     testimonial.value = "";
-    getTestimonials()
+    rating.value = 0; // Reset rating
+    getTestimonials();
   } catch (error) {
     console.log(error);
   } finally {
@@ -558,6 +593,7 @@ const testimonials = ref([]);
 
 const getTestimonials = async () => {
   try {
+    testimonials.value = []; // Clear before repopulating
     const snapshots = await getDocs(testimonialsRef);
 
     snapshots.docs.forEach((doc) => {
@@ -572,6 +608,6 @@ const getTestimonials = async () => {
 };
 
 onMounted(() => {
-    getTestimonials()
-})
+  getTestimonials();
+});
 </script>

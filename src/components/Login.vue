@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-black/10 w-screen h-screen backdrop-blur-sm flex items-center justify-center duration-500">
+    <div class="bg-black/10 w-screen h-screen backdrop-blur-sm flex items-center justify-center duration-500" v-bind="$attrs">
         <form @submit.prevent="signInUsingEmail" class="bg-white w-full relative max-w-sm rounded-md p-5 border h-fit flex flex-col space-y-5">
             <Icon icon="mdi:close" class="absolute right-5 top-5 text-2xl cursor-pointer" @click="closeModal" />
             <h1 class="text-center text-xl font-medium">Sign In</h1>
@@ -23,7 +23,24 @@
             <div class="flex items-center justify-center">
                 <Icon icon="flat-color-icons:google" class="cursor-pointer  text-4xl" @click="signInWithGoogle" />
             </div>
+            <div class="text-center mt-2">
+                <button type="button" class="underline text-sm text-gray-600" @click="showTerms = true">Terms and Conditions</button>
+            </div>
         </form>
+    </div>
+    <div v-if="showTerms" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-md max-w-lg w-full p-6 relative">
+            <button class="absolute top-2 right-2 text-xl" @click="showTerms = false">&times;</button>
+            <h2 class="text-lg font-bold mb-2">Terms and Conditions</h2>
+            <div class="max-h-80 overflow-y-auto text-sm text-gray-700">
+                <p>
+                    By using this service, you agree to our terms and conditions. Your data will be handled securely and in accordance with our privacy policy. Please read all terms carefully before proceeding. (Replace this text with your actual terms and conditions.)
+                </p>
+            </div>
+            <div class="mt-4 text-right">
+                <button class="bg-custom-primary text-white px-4 py-1 rounded" @click="showTerms = false">Close</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -37,7 +54,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const emit = defineEmits(['closeModal'])
+const emit = defineEmits(['closeModal', 'signUp'])
 
 const closeModal = () => {
     router.push({
@@ -93,4 +110,6 @@ const signInWithGoogle = async () => {
         console.log(error)
     }
 }
+
+const showTerms = ref(false)
 </script>

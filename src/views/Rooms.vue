@@ -135,7 +135,7 @@
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <label>Guests</label>
-                    <input type="number" class="h-8 px-2 rounded border" v-model="guests" @input="checkGuests">
+                    <input type="number" class="h-8 px-2 rounded border" min="0" v-model="guests" @input="checkGuests">
                 </div>
                 <div class="flex justify-end gap-x-2">
                     <button class="w-1/3 border border-custom-primary text-custom-primary rounded" @click="noBookingDetails = false">Cancel</button>

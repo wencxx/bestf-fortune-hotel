@@ -64,7 +64,7 @@
                 <div class="grid grid-cols-2 gap-5 w-full">
                     <div class="flex flex-col gap-y-1">
                         <label>Select Mode of Payment:</label>
-                        <select class="border rounded pl-2 h-8" v-model="checkOutDetails.mop" @change="showGcash = true">
+                        <select class="border rounded pl-2 h-8" v-model="checkOutDetails.mop">
                             <option value="" disabled>Select Mode of payment</option>
                             <option>GCASH</option>
                         </select>
@@ -72,6 +72,15 @@
                     <div class="flex flex-col gap-y-1" v-if="checkOutDetails.mop === 'GCASH'">
                         <label>Reference Number:</label>
                         <input type="text" class="border rounded pl-2 h-8" v-model="checkOutDetails.referenceNumber" required>
+                        <!-- Show button to open GCash modal if it's closed -->
+                        <button
+                            v-if="!showGcash"
+                            type="button"
+                            class="mt-2 bg-blue-500 text-white px-3 py-1 rounded w-fit"
+                            @click="showGcash = true"
+                        >
+                            Show GCash QR
+                        </button>
                     </div>
                 </div>
                 <button v-if="!checkingOut" class="bg-green-500 px-3 py-1 float-end rounded text-white">Check out</button>
@@ -410,4 +419,13 @@ const filteredFloors = () => {
 
     return floors
 }
+
+// Add watcher for mode of payment
+watch(() => checkOutDetails.value.mop, (newVal) => {
+    if (newVal === 'GCASH') {
+        showGcash.value = true
+    } else {
+        showGcash.value = false
+    }
+})
 </script>
