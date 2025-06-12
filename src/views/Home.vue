@@ -22,6 +22,7 @@
           <input
             type="date"
             :min="minDate"
+            :max="maxDate"
             id="checkin"
             class="text-xs cursor-pointer focus:outline-none"
             v-model="checkInDate"
@@ -33,8 +34,9 @@
           <span>Check out</span>
           <input
             type="date"
-            :min="minDate"
-            id="checkin"
+            :min="checkOutMinDate"
+            :max="checkOutMaxDate"
+            id="checkout"
             class="text-xs cursor-pointer focus:outline-none"
             v-model="checkOutDate"
           />
@@ -161,28 +163,44 @@
                 </div>
             </div>
         </div> -->
-    <div class="h-fit bg-gray-100 py-5">
-      <div class="w-full max-w-6xl mx-auto p-10">
-        <div class="w-full flex flex-col items-center space-y-4">
+    <div class="h-fit bg-gradient-to-br from-gray-100 to-white py-10">
+      <div class="w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-10 p-6 lg:p-12 rounded-2xl shadow-lg bg-white/80">
+        <div class="w-full lg:w-1/2 flex flex-col items-center lg:items-start space-y-4">
           <h3
-            class="font-medium text-sm font-inter uppercase border-b-2 border-custom-primary"
+            class="font-medium text-xs font-inter uppercase border-b-2 border-custom-primary tracking-widest text-custom-primary mb-2"
           >
             About us
           </h3>
-          <h1 class="text-4xl font-serif capitalize tracking-wide">
-            Best fortune hotel
+          <h1 class="text-4xl md:text-5xl font-serif capitalize tracking-wide text-gray-800 mb-2">
+            Best Fortune Hotel
           </h1>
-          <p class="text-center w-3/4 text-gray-500 text-sm">
-            A 2-star accommodation conveniently located in the heart of Manila,
-            Philippines. Offering excellent amenities and a comfortable stay,
-            it's perfect for both business and leisure travelers.<br /><br />
-            Built in 1997, the hotel boasts 90 well-appointed rooms and
-            top-notch service. Located just 0.7 km from the city center and 45
-            minutes from the airport, it provides easy access to Manila's
-            attractions. Check-in starts at 2 PM, and check-out is until 12 PM.
-            The hotel is family-friendly, offering free stays for children aged
-            0 to 6. Book your stay today and experience the best of Manila.
+          <p class="text-left w-full text-gray-600 text-base leading-relaxed">
+            A
+            <span class="font-semibold text-custom-primary"
+              >2-star accommodation</span
+            >
+            conveniently located in the heart of Manila, Philippines. Offering
+            excellent amenities and a comfortable stay, it's perfect for both
+            business and leisure travelers.<br /><br />
+            Built in 1997, the hotel boasts
+            <span class="font-semibold">90 well-appointed rooms</span> and
+            top-notch service. Located just
+            <span class="font-semibold">0.7 km from the city center</span> and
+            <span class="font-semibold">45 minutes from the airport</span>, it
+            provides easy access to Manila's attractions. Check-in starts at
+            <span class="font-semibold">2 PM</span>, and check-out is until
+            <span class="font-semibold">12 PM</span>. The hotel is family-friendly,
+            offering
+            <span class="font-semibold">free stays for children aged 0 to 6</span
+            >. Book your stay today and experience the best of Manila.
           </p>
+        </div>
+        <div class="w-full lg:w-1/2 flex justify-center">
+          <img
+            src="../assets/BFH Counter.jpg"
+            alt="bfh counter"
+            class="w-full max-w-md rounded-xl shadow aspect-video object-cover border-4 border-custom-primary/20"
+          />
         </div>
       </div>
     </div>
@@ -192,7 +210,7 @@
     >
       <div class="flex flex-col items-center gap-y-5">
         <h3
-          class="font-medium text-sm font-inter uppercase border-b-2 border-custom-primary"
+          class="font-medium text-sm font-inter uppercase border-b-2 border-custom-primary tracking-widest text-gray-700"
         >
           Testimonials
         </h3>
@@ -208,7 +226,12 @@
             <p class="text-center text-lg">"{{ testi.testimonial }}"</p>
             <!-- Display rating as stars -->
             <div class="flex justify-center mb-2">
-              <Icon v-for="star in 5" :key="star" :icon="testi.rating >= star ? 'mdi:star' : 'mdi:star-outline'" class="text-2xl text-yellow-400" />
+              <Icon
+                v-for="star in 5"
+                :key="star"
+                :icon="testi.rating >= star ? 'mdi:star' : 'mdi:star-outline'"
+                class="text-2xl text-yellow-400"
+              />
             </div>
             <h2
               class="text-center font-medium font-inter tracking-wide capitalize text-gray-500"
@@ -392,8 +415,16 @@
         ></textarea>
         <!-- Star Rating Input -->
         <div class="flex items-center gap-x-2">
-          <span v-for="star in 5" :key="star" @click="rating = star" class="cursor-pointer">
-            <Icon :icon="rating >= star ? 'mdi:star' : 'mdi:star-outline'" class="text-3xl text-yellow-400" />
+          <span
+            v-for="star in 5"
+            :key="star"
+            @click="rating = star"
+            class="cursor-pointer"
+          >
+            <Icon
+              :icon="rating >= star ? 'mdi:star' : 'mdi:star-outline'"
+              class="text-3xl text-yellow-400"
+            />
           </span>
         </div>
         <button
@@ -430,10 +461,27 @@ onMounted(() => {
 });
 
 const minDate = new Date().toISOString().split("T")[0];
+const currentYear = new Date().getFullYear();
+const maxDate = `${currentYear}-12-31`;
 
 const checkInDate = ref("");
 const checkOutDate = ref("");
 const guests = ref("");
+
+const checkOutMinDate = computed(() => {
+  // If checkInDate is set, checkout must be at least the next day
+  if (checkInDate.value) {
+    const inDate = new Date(checkInDate.value);
+    inDate.setDate(inDate.getDate() + 1);
+    // Ensure it doesn't go past the year
+    const nextDay = inDate.toISOString().split("T")[0];
+    return nextDay > maxDate ? maxDate : nextDay;
+  }
+  // Otherwise, fallback to today or minDate
+  return minDate;
+});
+
+const checkOutMaxDate = maxDate;
 
 const checkAvailability = () => {
   router.push({

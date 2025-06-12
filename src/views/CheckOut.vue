@@ -3,7 +3,7 @@
         <div class="w-full max-w-6xl flex my-auto rounded-xl p-5 bg-white h-fit gap-10 font-inter">
             <form @submit.prevent="checkOut" class="w-3/5 space-y-3">
                 <div v-if="err" class="w-full h-fit py-2 bg-custom-primary/45 rounded-md flex items-center pl-5 border border-red-200">
-                    <h1 class="font-inter text-sm">Fill out all required fields</h1>
+                    <h1 class="font-inter text-sm">{{ err }}</h1>
                 </div>
                 <div v-if="failedCheckingOut" class="w-full h-fit py-2 bg-custom-primary/45 rounded-md flex items-center pl-5 border border-red-200">
                     <h1 class="font-inter text-sm">Failed checking out. Try again later</h1>
@@ -11,6 +11,9 @@
                 <h1 class="font-inter text-xl font-semibold">Secure Checkout</h1>
                 <div class="w-full h-fit py-3 bg-custom-secondary/15 rounded-md flex items-center pl-5 border border-yellow-200">
                     <h1 class="font-inter text-sm">Check out securely - it only takes a few minutes</h1>
+                </div>
+                <div class="w-full h-fit py-2 bg-red-100 rounded-md flex items-center pl-5 border border-red-300">
+                    <h1 class="font-inter text-sm font-semibold text-red-600">Reminder: This payment is <span class="uppercase">not refundable</span>.</h1>
                 </div>
                 <h1 class="font-inter font-semibold text-md">Contact Details</h1>
                 <div class="grid grid-cols-2 gap-5 w-full">
@@ -71,7 +74,7 @@
                     </div>
                     <div class="flex flex-col gap-y-1" v-if="checkOutDetails.mop === 'GCASH'">
                         <label>Reference Number:</label>
-                        <input type="text" class="border rounded pl-2 h-8" v-model="checkOutDetails.referenceNumber" required>
+                        <input type="text" class="border rounded pl-2 h-8" v-model="checkOutDetails.referenceNumber" required maxlength="13">
                         <!-- Show button to open GCash modal if it's closed -->
                         <button
                             v-if="!showGcash"
@@ -153,6 +156,18 @@
                 <router-link :to="{ name: 'rooms' }" class="bg-green-500 w-1/3 py-1 rounded mt-2 text-white text-center">OK</router-link>
             </div>
         </div>
+
+        <!-- Checkout Confirmation Modal -->
+        <div v-if="showCheckoutConfirm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative">
+                <h2 class="text-xl font-bold mb-2 text-center">Confirm Checkout</h2>
+                <p class="mb-4 text-center text-red-600 font-semibold">Are you sure you want to proceed with the checkout?<br>This payment is <span class="uppercase">not refundable</span>.</p>
+                <div class="flex justify-center gap-4 mt-4">
+                    <button @click="confirmCheckout" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Yes, Proceed</button>
+                    <button @click="cancelCheckout" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -170,6 +185,7 @@ const currentUser = computed(() => authStore.user)
 const route = useRoute()
 
 const showGcash = ref(false)
+const showCheckoutConfirm = ref(false)
 
 watch(currentUser, () => {
     getUserDetails()
@@ -279,11 +295,23 @@ const bookingId = ref('')
 const checkOut = async () => {
     failedCheckingOut.value = false
     err.value = false
-    if (Object.values(checkOutDetails.value).some(field => field === undefined || field === null || field === "")) {
-        err.value = true;
+    // Require reference number to be exactly 13 characters if GCASH is selected
+    if (
+        Object.values(checkOutDetails.value).some(field => field === undefined || field === null || field === "") ||
+        (checkOutDetails.value.mop === 'GCASH' && checkOutDetails.value.referenceNumber.length !== 13)
+    ) {
+        if (checkOutDetails.value.mop === 'GCASH' && checkOutDetails.value.referenceNumber.length !== 13) {
+            err.value = 'Reference number must be exactly 13 characters.';
+        } else {
+            err.value = 'Fill out all required fields';
+        }
+        return;
     }
+    showCheckoutConfirm.value = true
+}
 
-
+const confirmCheckout = async () => {
+    showCheckoutConfirm.value = false
     try {
         checkingOut.value = true
         const snapshot = await addDoc(collection(db, 'booking'), {
@@ -336,6 +364,10 @@ const checkOut = async () => {
     } finally {
         checkingOut.value = false
     }
+}
+
+const cancelCheckout = () => {
+    showCheckoutConfirm.value = false
 }
 
 const downloadImage = () => {

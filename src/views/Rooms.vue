@@ -8,11 +8,11 @@
                 <div class="flex flex-col gap-y-5 p-5 lg:flex-row w-full bg-white lg:w-full h-fit lg:h-20 rounded font-light shadow overflow-hidden">
                     <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
                         <span class="text-lg font-medium">Check in</span>
-                        <input type="date" id="checkin" :min="minDate" class="text-sm cursor-pointer focus:outline-none" v-model="checkIn">
+                        <input type="date" id="checkin" :min="minDate" max="2025-12-31" class="text-sm cursor-pointer focus:outline-none" v-model="checkIn">
                     </div>
                     <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
                         <span class="text-lg font-medium">Check out</span>
-                        <input type="date" id="checkin" :min="minDate" class="text-sm cursor-pointer focus:outline-none" v-model="checkOut">
+                        <input type="date" id="checkin" :max="'2025-12-31'" class="text-sm cursor-pointer focus:outline-none" v-model="checkOut" :min="checkIn ? nextDay(checkIn) : minDate">
                     </div>
                     <div class="w-full border-b py-2 lg:border-b-0 lg:py-0 lg:w-1/4 flex flex-col lg:items-center lg:justify-center cursor-pointer">
                         <span class="text-lg font-medium">Guests</span>
@@ -127,15 +127,22 @@
                 <p v-if="passGuestsLimit" class="bg-red-500 pl-2 py-1 text-white rounded">Guests capacity exceeds</p>
                 <div class="flex flex-col gap-y-1">
                     <label>Check In</label>
-                    <input type="date" :min="minDate" class="h-8 px-2 rounded border" v-model="checkIn">
+                    <input type="date" :min="minDate" max="2025-12-31" class="h-8 px-2 rounded border" v-model="checkIn">
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <label>Check Out</label>
-                    <input type="date" :min="minDate" class="h-8 px-2 rounded border" v-model="checkOut">
+                    <input type="date" :min="checkIn ? nextDay(checkIn) : minDate" max="2025-12-31" class="h-8 px-2 rounded border" v-model="checkOut">
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <label>Guests</label>
-                    <input type="number" class="h-8 px-2 rounded border" min="0" v-model="guests" @input="checkGuests">
+                    <input
+                        type="number"
+                        class="h-8 px-2 rounded border"
+                        min="1"
+                        max="9"
+                        v-model.number="guests"
+                        @input="onGuestsInput"
+                    >
                 </div>
                 <div class="flex justify-end gap-x-2">
                     <button class="w-1/3 border border-custom-primary text-custom-primary rounded" @click="noBookingDetails = false">Cancel</button>
@@ -293,5 +300,20 @@ const checkGuests = () => {
     }else{
         passGuestsLimit.value = false
     }
+}
+
+// Clamp guests input between 1 and 9
+const onGuestsInput = () => {
+    if (guests.value === '' || guests.value === null) return
+    if (guests.value < 1) guests.value = 1
+    if (guests.value > 9) guests.value = 9
+    checkGuests()
+}
+
+// Helper to get next day string in yyyy-mm-dd
+function nextDay(dateStr) {
+    const d = new Date(dateStr)
+    d.setDate(d.getDate() + 1)
+    return d.toISOString().split('T')[0]
 }
 </script>
