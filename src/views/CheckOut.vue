@@ -74,7 +74,14 @@
                     </div>
                     <div class="flex flex-col gap-y-1" v-if="checkOutDetails.mop === 'GCASH'">
                         <label>Reference Number:</label>
-                        <input type="text" class="border rounded pl-2 h-8" v-model="checkOutDetails.referenceNumber" required maxlength="13">
+                        <input
+                            type="number"
+                            class="border rounded pl-2 h-8"
+                            v-model="checkOutDetails.referenceNumber"
+                            maxlength="13"
+                            @input="onReferenceNumberInput"
+                            required
+                        >
                         <!-- Show button to open GCash modal if it's closed -->
                         <button
                             v-if="!showGcash"
@@ -460,4 +467,11 @@ watch(() => checkOutDetails.value.mop, (newVal) => {
         showGcash.value = false
     }
 })
+
+// Add this function to limit reference number to 13 digits
+const onReferenceNumberInput = (e) => {
+    let val = e.target.value.replace(/\D/g, '') // Remove non-digits
+    if (val.length > 13) val = val.slice(0, 13)
+    checkOutDetails.value.referenceNumber = val
+}
 </script>
