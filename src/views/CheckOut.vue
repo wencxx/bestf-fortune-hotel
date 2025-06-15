@@ -1,7 +1,7 @@
 <template>
-    <div class="min-h-[90dvh] bg-gray-100 py-10 !pb-20 px-10 flex items-center justify-center">
-        <div class="w-full max-w-6xl flex my-auto rounded-xl p-5 bg-white h-fit gap-10 font-inter">
-            <form @submit.prevent="checkOut" class="w-3/5 space-y-3">
+    <div class="min-h-[100dvh] bg-gray-100 py-10 !pb-20 px-2 sm:px-6 md:px-10 flex items-center justify-center pt-[15dvh]">
+        <div class="w-full max-w-6xl flex flex-col lg:flex-row my-auto rounded-xl p-2 sm:p-5 bg-white h-fit gap-5 lg:gap-10 font-inter">
+            <form @submit.prevent="checkOut" class="w-full lg:w-3/5 space-y-3">
                 <div v-if="err" class="w-full h-fit py-2 bg-custom-primary/45 rounded-md flex items-center pl-5 border border-red-200">
                     <h1 class="font-inter text-sm">{{ err }}</h1>
                 </div>
@@ -16,7 +16,7 @@
                     <h1 class="font-inter text-sm font-semibold text-red-600">Reminder: This payment is <span class="uppercase">not refundable</span>.</h1>
                 </div>
                 <h1 class="font-inter font-semibold text-md">Contact Details</h1>
-                <div class="grid grid-cols-2 gap-5 w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
                     <div class="flex flex-col gap-y-1">
                         <label>Email:</label>
                         <input type="email" class="border rounded pl-2 h-8" v-model="checkOutDetails.email">
@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <h1 class="font-inter font-semibold text-md">Personal Details</h1>
-                <div class="grid grid-cols-2 gap-5 w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
                     <div class="flex flex-col gap-y-1">
                         <label>First Name:</label>
                         <input type="text" class="border rounded pl-2 h-8" v-model="checkOutDetails.firstName">
@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <h1 class="font-inter font-semibold text-md">Choose Room</h1>
-                <div class="grid grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div class="flex flex-col gap-y-1">
                         <label>Room Floor:</label>
                         <select class="border rounded pl-2 h-8" v-model="checkOutDetails.floor">
@@ -63,41 +63,11 @@
                         <label>Beds (₱500):</label>
                         <input type="number" class="border rounded pl-2 h-8" v-model="checkOutDetails.beds" @change="addBeds">
                 </div>
-                <h1 class="font-inter font-semibold text-md">Payment</h1>
-                <div class="grid grid-cols-2 gap-5 w-full">
-                    <div class="flex flex-col gap-y-1">
-                        <label>Select Mode of Payment:</label>
-                        <select class="border rounded pl-2 h-8" v-model="checkOutDetails.mop">
-                            <option value="" disabled>Select Mode of payment</option>
-                            <option>GCASH</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col gap-y-1" v-if="checkOutDetails.mop === 'GCASH'">
-                        <label>Reference Number:</label>
-                        <input
-                            type="number"
-                            class="border rounded pl-2 h-8"
-                            v-model="checkOutDetails.referenceNumber"
-                            maxlength="13"
-                            @input="onReferenceNumberInput"
-                            required
-                        >
-                        <!-- Show button to open GCash modal if it's closed -->
-                        <button
-                            v-if="!showGcash"
-                            type="button"
-                            class="mt-2 bg-blue-500 text-white px-3 py-1 rounded w-fit"
-                            @click="showGcash = true"
-                        >
-                            Show GCash QR
-                        </button>
-                    </div>
-                </div>
                 <button v-if="!checkingOut" class="bg-green-500 px-3 py-1 float-end rounded text-white">Check out</button>
                 <button v-else class="bg-green-500 px-3 py-1 float-end rounded text-white animate-pulse" disabled>Checking out</button>
             </form>
-            <div v-if="!loading" class="w-2/5 space-y-2">
-                <img :src="room.thumbnailUrl" :alt="room.roomName" class="aspect-video rounded shadow mb-5">
+            <div v-if="!loading" class="w-full lg:w-2/5 space-y-2">
+                <img :src="room.thumbnailUrl" :alt="room.roomName" class="aspect-video rounded shadow mb-5 w-full object-cover">
                 <div class="flex gap-x-1 w-full">
                     <h1 class="text-2xl capitalize  font-serif text-custom-primary font-medium">{{ checkOutDetails.roomName }}</h1>
                 </div>
@@ -137,24 +107,12 @@
                     </div>
                 </div>
             </div>
-            <div v-else class="w-2/5">
+            <div v-else class="w-full lg:w-2/5">
                 <div class="w-full aspect-video bg-gray-200 animate-pulse rounded"></div>
             </div>
         </div>
 
-        <!-- gcash qr -->
-        <div v-if="showGcash" class="w-screen h-screen bg-white/30 fixed top-0 left-0 backdrop-blur-sm flex items-center justify-center px-5 z-50">
-            <div class="bg-white shadow border rounded-md w-full max-w-md h-fit p-4 relative">
-                <!-- <button class="absolute top-4 right-4 bg-gray-200 p-2 rounded-full" @click="downloadImage">
-                    <Icon icon="mdi:download" class="text-xl" />
-                </button> -->
-                <h1 class="text-center font-inter uppercase font-medium">Scan to pay</h1>
-                <img src="../assets/Gcash QR.jpg" class="w-full aspect-square" />
-                <button class="float-end bg-red-500 text-white px-4 rounded py-1" @click="showGcash = false">Close</button>
-            </div>
-        </div>
-
-        <div v-if="bookingId" class="w-screen h-screen bg-black/30 z-50 fixed top-0 left-0 flex items-center justify-center px-5">
+        <div v-if="bookingId" class="w-screen h-screen bg-black/30 z-50 fixed top-0 left-0 flex items-center justify-center px-2 sm:px-5">
             <div class="bg-white shadow border rounded-md w-full max-w-md h-fit p-4 relative flex flex-col items-center gap-y-5">
                 <Icon icon="ix:success-filled" class="text-7xl text-green-500" />
                 <h1 class="text-2xl uppercase">Booking Confirmed</h1>
@@ -166,7 +124,7 @@
 
         <!-- Checkout Confirmation Modal -->
         <div v-if="showCheckoutConfirm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative">
+            <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6 max-w-md w-full relative">
                 <h2 class="text-xl font-bold mb-2 text-center">Confirm Checkout</h2>
                 <p class="mb-4 text-center text-red-600 font-semibold">Are you sure you want to proceed with the checkout?<br>This payment is <span class="uppercase">not refundable</span>.</p>
                 <div class="flex justify-center gap-4 mt-4">
@@ -191,7 +149,6 @@ const currentUser = computed(() => authStore.user)
 
 const route = useRoute()
 
-const showGcash = ref(false)
 const showCheckoutConfirm = ref(false)
 
 watch(currentUser, () => {
@@ -241,8 +198,6 @@ const checkOutDetails = ref({
     address: '',
     floor: '',
     beds: 0,
-    mop: '',
-    referenceNumber: '',
     roomName: '',
     checkIn: route.query.checkIn || '',
     checkOut: route.query.checkOut || '',
@@ -302,16 +257,10 @@ const bookingId = ref('')
 const checkOut = async () => {
     failedCheckingOut.value = false
     err.value = false
-    // Require reference number to be exactly 13 characters if GCASH is selected
     if (
-        Object.values(checkOutDetails.value).some(field => field === undefined || field === null || field === "") ||
-        (checkOutDetails.value.mop === 'GCASH' && checkOutDetails.value.referenceNumber.length !== 13)
+        Object.values(checkOutDetails.value).some(field => field === undefined || field === null || field === "")
     ) {
-        if (checkOutDetails.value.mop === 'GCASH' && checkOutDetails.value.referenceNumber.length !== 13) {
-            err.value = 'Reference number must be exactly 13 characters.';
-        } else {
-            err.value = 'Fill out all required fields';
-        }
+        err.value = 'Fill out all required fields';
         return;
     }
     showCheckoutConfirm.value = true
@@ -354,8 +303,6 @@ const confirmCheckout = async () => {
             address: '',
             floor: '',
             beds: 0,
-            mop: '',
-            referenceNumber: '',
             roomName: '',
             checkIn: route.query.checkIn || '',
             checkOut: route.query.checkOut || '',
@@ -457,21 +404,5 @@ const filteredFloors = () => {
     }
 
     return floors
-}
-
-// Add watcher for mode of payment
-watch(() => checkOutDetails.value.mop, (newVal) => {
-    if (newVal === 'GCASH') {
-        showGcash.value = true
-    } else {
-        showGcash.value = false
-    }
-})
-
-// Add this function to limit reference number to 13 digits
-const onReferenceNumberInput = (e) => {
-    let val = e.target.value.replace(/\D/g, '') // Remove non-digits
-    if (val.length > 13) val = val.slice(0, 13)
-    checkOutDetails.value.referenceNumber = val
 }
 </script>

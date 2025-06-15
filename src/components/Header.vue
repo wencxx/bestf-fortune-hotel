@@ -1,10 +1,10 @@
 <template>
-    <div class="h-[10dvh] w-full flex justify-center px-[5dvw] z-50" :class="{ 'bg-gray-100': $route.name !== 'home' }">
+    <div class="h-[10dvh] w-full flex justify-center px-[5dvw] z-50" :class="{ 'bg-gray-100': $route.name !== 'home', '!bg-red-500': scrolled && $route.name === 'rooms', '!bg-white': scrolled && $route.name !== 'rooms' }">
         <div class="w-full max-w-6xl flex items-center justify-between">
             <router-link :to="{ name: 'home' }" class="!bg-transparent">
                 <img src="../assets/277741668_347625477389163_2974931926985871192_n-removebg-preview.png" alt="logo" class="w-14 aspect-square">
             </router-link>
-            <ul class="hidden lg:flex items-center gap-x-2 text-gray-200 font-inter font-medium tracking-wide uppercase text-sm" :class="{'!text-black': !isTargetVisible }">
+            <ul class="hidden lg:flex items-center gap-x-2 text-gray-200 font-inter font-medium tracking-wide uppercase text-sm" :class="{'!text-black': !isTargetVisible, '!text-black': scrolled }">
                 <li>
                     <router-link class="px-3 py-1 rounded" :to="{ name: 'home' }" :class="{'!text-black': $route.path !== '/' }">Home</router-link>
                 </li>
@@ -50,7 +50,8 @@ const isAuth = computed(() => authStore.isAuth)
 const currentUser = computed(() => authStore.user)
 
 const { isTargetVisible } = defineProps({
-    isTargetVisible: Boolean
+    isTargetVisible: Boolean,
+    scrolled: Boolean
 }) 
 
 watch(route, () => {

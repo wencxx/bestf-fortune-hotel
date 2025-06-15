@@ -1,88 +1,78 @@
 <template>
-    <div class="min-h-[90dvh] bg-gray-100 px-10 flex justify-center">
-        <div class="w-full max-w-6xl flex flex-col gap-y-5 !h-[90dvh] font-inter py-14">
-            <div v-if="cancelledBooking" class="w-full py-2 bg-red-500 rounded pl-4 text-white uppercase">
+    <div class="min-h-[90dvh] pt-[10dvh] bg-gray-50 px-4 flex justify-center fixed top-0 w-full">
+        <div class="w-full max-w-5xl flex flex-col gap-y-6 font-inter py-10">
+            <div v-if="cancelledBooking" class="w-full py-2 bg-red-500 rounded pl-4 text-white uppercase shadow">
                 <p>Booking with booking ID: <span class="font-bold underline">{{ cancelledBooking }}</span> cancelled successfully!</p>
             </div>
-            <h1 class="font-medium text-xl flex items-center gap-x-2"><Icon icon="majesticons:book-line" class="text-3xl" /> Bookings</h1>
-            <div class="w-full max-w-6xl bg-white p-5 rounded-xl overflow-x-auto">
-                <table class="w-full min-w-[110%] rounded-md overflow-hidden">
-                    <thead class="bg-custom-primary text-white">
-                        <tr>
-                            <th class="border w-2/12 py-2">Book At</th>
-                            <th class="border w-2/12 py-2">Booking Id</th>
-                            <th class="border w-2/12 py-2">Room</th>
-                            <th class="border w-1/12 py-2">Check In</th>
-                            <th class="border w-1/12 py-2">Check Out</th>
-                            <th class="border w-1/12 py-2">Days</th>
-                            <th class="border w-1/12 py-2">Total Price</th>
-                            <th class="border w-1/12 py-2">Status</th>
-                            <th class="border w-1/12 py-2">Reason</th>
-                            <th class="border w-1/12 py-2">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="loading">
-                        <tr v-for="i in 5" :key="i">
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                            <td class="border text-center py-2">
-                                <div class="h-5 mx-auto w-3/4 bg-gray-300 animate-pulse rounded"></div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody v-else-if="!loading && bookings.length">
-                        <tr class="border" v-for="(booking, index) in bookings" :key="booking.id" :class="{ 'bg-gray-100': index % 2 === 0 }">
-                            <td class="text-center py-2">{{ formatFirebaseTimestamp(booking.bookedAt) }}</td>
-                            <td class="text-center py-2">{{ booking.id }}</td>
-                            <td class="text-center py-2">{{ booking.roomName }}</td>
-                            <td class="text-center py-2">{{ formatDate(booking.checkIn) }}</td>
-                            <td class="text-center py-2">{{ formatDate(booking.checkOut) }}</td>
-                            <td class="text-center py-2">{{ booking.days }} day(s)</td>
-                            <td class="text-center py-2">{{ formatCurrency(booking.totalPrice) }}</td>
-                            <td class="text-center py-2">
-                                <div class="text-white rounded w-4/5 mx-auto capitalize text-sm px-1 h-3/4" :class="{ 'bg-orange-500': booking.status === 'pending', 'bg-red-500': booking.status === 'canceled', 'bg-green-500': booking.status === 'confirmed' }">
-                                    {{ booking.status }}
-                                </div>
-                            </td>
-                            <td class="text-center py-2">
-                                {{ booking.reasonForDeclining || 'N/A' }}
-                            </td>
-                            <td class="text-center py-2">
-                                <div v-if="booking.status !== 'canceled'">
-                                    <button v-if="!cancelling" class="bg-red-500 px-3 text-white rounded text-sm h-3/4" @click="cancelBooking(booking.id, index)">Cancel</button>
-                                    <button v-else class="bg-red-500 px-3 text-white rounded text-sm h-3/4" disabled>Cancelling</button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody v-else-if="!loading && bookings.length === 0">
-                        <tr>
-                            <td colspan="8" class="text-center py-1">No bookings to show</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="flex items-center justify-between mb-2">
+                <h1 class="font-semibold text-2xl flex items-center gap-x-2">
+                    <Icon icon="majesticons:book-line" class="text-3xl" /> My Bookings
+                </h1>
+                <span class="text-gray-500 text-sm">{{ bookings.length }} booking(s)</span>
+            </div>
+            <div v-if="loading" class="flex flex-col gap-4">
+                <div v-for="i in 3" :key="i" class="bg-white rounded-xl shadow p-6 animate-pulse flex flex-col gap-2">
+                    <div class="h-5 w-1/3 bg-gray-200 rounded"></div>
+                    <div class="h-4 w-1/2 bg-gray-200 rounded"></div>
+                    <div class="h-4 w-1/4 bg-gray-200 rounded"></div>
+                </div>
+            </div>
+            <div v-else-if="!loading && bookings.length" class="flex flex-col gap-6">
+                <div v-for="(booking, index) in bookings" :key="booking.id" class="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-gray-100">
+                    <div class="flex-1 flex flex-col gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-lg text-custom-primary">{{ booking.roomName }}</span>
+                            <span class="ml-2 px-2 py-0.5 rounded text-xs font-semibold"
+                                :class="{
+                                    'bg-orange-100 text-orange-700': booking.status === 'pending',
+                                    'bg-red-100 text-red-700': booking.status === 'canceled',
+                                    'bg-green-100 text-green-700': booking.status === 'confirmed'
+                                }">
+                                {{ booking.status }}
+                            </span>
+                        </div>
+                        <div class="text-gray-500 text-sm">Booking ID: <span class="font-mono">{{ booking.id }}</span></div>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <div class="flex flex-col">
+                                <span class="text-xs text-gray-400">Booked At</span>
+                                <span class="font-medium">{{ formatFirebaseTimestamp(booking.bookedAt) }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs text-gray-400">Check In</span>
+                                <span class="font-medium">{{ formatDate(booking.checkIn) }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs text-gray-400">Check Out</span>
+                                <span class="font-medium">{{ formatDate(booking.checkOut) }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs text-gray-400">Days</span>
+                                <span class="font-medium">{{ booking.days }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs text-gray-400">Total Price</span>
+                                <span class="font-medium text-custom-primary">{{ formatCurrency(booking.totalPrice) }}</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            <span class="font-semibold">Reason:</span> {{ booking.reasonForDeclining || 'N/A' }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-2 min-w-[120px]">
+                        <button v-if="booking.status !== 'canceled'" 
+                            :disabled="cancelling"
+                            class="bg-red-500 hover:bg-red-600 transition text-white rounded px-4 py-2 text-sm font-semibold shadow disabled:opacity-60 disabled:cursor-not-allowed"
+                            @click="cancelBooking(booking.id, index)">
+                            <span v-if="!cancelling">Cancel Booking</span>
+                            <span v-else>Cancelling...</span>
+                        </button>
+                        <span v-else class="text-red-400 text-xs font-semibold">Booking Cancelled</span>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="!loading && bookings.length === 0" class="flex flex-col items-center justify-center py-20">
+                <Icon icon="majesticons:book-line" class="text-5xl text-gray-300 mb-2" />
+                <span class="text-gray-400 text-lg">No bookings to show</span>
             </div>
         </div>
     </div>
@@ -184,3 +174,15 @@ const cancelBooking = async (bookingId, index) => {
     }
 }
 </script>
+
+<style scoped>
+.text-custom-primary {
+    color: #2563eb;
+}
+.bg-custom-primary {
+    background: #2563eb;
+}
+.font-inter {
+    font-family: 'Inter', sans-serif;
+}
+</style>
