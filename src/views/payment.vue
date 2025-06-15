@@ -53,6 +53,7 @@ const submitPayment = async () => {
     await updateDoc(doc(db, 'booking', bookingId), {
       referenceNumber: referenceNumber.value,
       mop: 'GCASH',
+      mop: 'paid',
     })
     success.value = true
     referenceNumber.value = ''
