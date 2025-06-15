@@ -117,6 +117,9 @@
                 <Icon icon="ix:success-filled" class="text-7xl text-green-500" />
                 <h1 class="text-2xl uppercase">Booking Confirmed</h1>
                 <p class="w-11/12 text-center text-xl">Your reservation is confirmed. Thank you for choosing us!</p>
+                <p class="w-11/12 text-center text-base text-gray-700">
+                    Once your booking is accepted, you will receive an email containing a link to process your payment.
+                </p>
                 <p class="font-medium text-lg"><span class="uppercase">Booking Id:</span> <span class="text-neutral-500">{{ bookingId }}</span></p>
                 <router-link :to="{ name: 'rooms' }" class="bg-green-500 w-1/3 py-1 rounded mt-2 text-white text-center">OK</router-link>
             </div>
@@ -126,7 +129,10 @@
         <div v-if="showCheckoutConfirm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6 max-w-md w-full relative">
                 <h2 class="text-xl font-bold mb-2 text-center">Confirm Checkout</h2>
-                <p class="mb-4 text-center text-red-600 font-semibold">Are you sure you want to proceed with the checkout?<br>This payment is <span class="uppercase">not refundable</span>.</p>
+                <p class="mb-4 text-center text-red-600 font-semibold">
+                    Are you sure you want to proceed with the checkout?<br>
+                    This payment is <span class="uppercase">not refundable</span>.
+                </p>
                 <div class="flex justify-center gap-4 mt-4">
                     <button @click="confirmCheckout" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Yes, Proceed</button>
                     <button @click="cancelCheckout" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
