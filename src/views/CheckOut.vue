@@ -61,7 +61,7 @@
                 <h1 class="font-inter font-semibold text-md">Add Ons</h1>
                 <div class="flex flex-col gap-y-1">
                         <label>Beds (₱500):</label>
-                        <input type="number" class="border rounded pl-2 h-8" v-model="checkOutDetails.beds" @change="addBeds">
+                        <input type="number" class="border rounded pl-2 h-8" min="0" v-model="checkOutDetails.beds" @change="addBeds">
                 </div>
                 <button v-if="!checkingOut" class="bg-green-500 px-3 py-1 float-end rounded text-white">Check out</button>
                 <button v-else class="bg-green-500 px-3 py-1 float-end rounded text-white animate-pulse" disabled>Checking out</button>
@@ -217,6 +217,10 @@ const checkOutDetails = ref({
 const roomDetails = ref({})
 
 const addBeds = () => {
+    // Prevent negative values
+    if (checkOutDetails.value.beds < 0) {
+        checkOutDetails.value.beds = 0
+    }
     checkOutDetails.value.totalPrice += checkOutDetails.value.beds * 500
 }
 
