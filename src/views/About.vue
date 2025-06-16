@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-[90dvh] bg-[#F2E2B1]"
+    class="min-h-[90dvh] bg-gray-100"
   >
     <div class="h-[90dvh] px-10 flex flex-col items-center justify-center gap-y-20">
         <div class="flex items-center gap-x-10 text-2xl">
