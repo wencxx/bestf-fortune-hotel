@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-[100dvh] bg-gray-200 py-10 !pb-20 px-2 sm:px-6 md:px-10 flex items-center justify-center pt-[15dvh]">
+    <div class="min-h-[100dvh] bg-gray-100 py-10 !pb-20 px-2 sm:px-6 md:px-10 flex items-center justify-center pt-[15dvh]">
         <div class="w-full max-w-6xl flex flex-col lg:flex-row my-auto rounded-xl p-2 sm:p-5 bg-white h-fit gap-5 lg:gap-10 font-inter">
             <form @submit.prevent="checkOut" class="w-full lg:w-3/5 space-y-3">
                 <div v-if="err" class="w-full h-fit py-2 bg-custom-primary/45 rounded-md flex items-center pl-5 border border-red-200">
