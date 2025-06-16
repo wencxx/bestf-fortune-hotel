@@ -1,5 +1,5 @@
 <template>
-    <div class="h-[10dvh] w-full flex justify-center px-[5dvw] z-50" :class="{ 'bg-gray-100': $route.name !== 'home', '!bg-red-500': scrolled }">
+    <div class="h-[10dvh] w-full flex justify-center px-[5dvw] z-50" :class="{ 'bg-gray-200': $route.name !== 'home', '!bg-red-500': scrolled }">
         <div class="w-full max-w-6xl flex items-center justify-between">
             <router-link :to="{ name: 'home' }" class="!bg-transparent">
                 <img src="../assets/277741668_347625477389163_2974931926985871192_n-removebg-preview.png" alt="logo" class="w-12 aspect-square">

@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-[90dvh] pt-[10dvh] bg-gray-50 px-4 flex justify-center fixed top-0 w-full">
+    <div class="min-h-[100dvh] pt-[10dvh] bg-gray-200 px-4 flex justify-center fixed top-0 w-full">
         <div class="w-full max-w-5xl flex flex-col gap-y-6 font-inter py-10">
             <div v-if="cancelledBooking" class="w-full py-2 bg-red-500 rounded pl-4 text-white uppercase shadow">
                 <p>Booking with booking ID: <span class="font-bold underline">{{ cancelledBooking }}</span> cancelled successfully!</p>

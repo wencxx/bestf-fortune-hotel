@@ -16,7 +16,7 @@
       :isTargetVisible="targetIsVisible"
       @signIn="willSignIn = true"
     />
-    <router-view @signIn="willSignIn = true" />
+    <router-view @signIn="willSignIn = true" class="bg-gray-200" />
     <Footer
       v-if="
         $route.name !== 'checkOut' &&
