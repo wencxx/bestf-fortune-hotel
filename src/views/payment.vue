@@ -14,7 +14,7 @@
       <!-- Add GCash number below QR code -->
       <div class="mb-6 text-center text-gray-700">
         Can't scan? Send payment to GCash number:<br />
-        <span class="font-semibold text-lg">09306071273</span>
+        <span class="font-semibold text-lg">09091777324</span>
       </div>
       <form @submit.prevent="submitPayment" class="w-full flex flex-col gap-4">
         <label class="font-medium">Reference Number</label>

@@ -23,7 +23,13 @@
                     </div>
                     <div class="flex flex-col gap-y-1">
                         <label>Phone Number:</label>
-                        <input type="number" class="border rounded pl-2 h-8" v-model="checkOutDetails.phone">
+                        <input
+                            type="number"
+                            class="border rounded pl-2 h-8"
+                            v-model="checkOutDetails.phone"
+                            :max="99999999999"
+                            @input="limitPhoneLength"
+                        >
                     </div>
                 </div>
                 <h1 class="font-inter font-semibold text-md">Personal Details</h1>
@@ -216,12 +222,22 @@ const checkOutDetails = ref({
 
 const roomDetails = ref({})
 
+const limitPhoneLength = () => {
+    // Only allow up to 11 digits
+    if (checkOutDetails.value.phone) {
+        checkOutDetails.value.phone = checkOutDetails.value.phone.toString().slice(0, 11)
+    }
+}
+
 const addBeds = () => {
     // Prevent negative values
     if (checkOutDetails.value.beds < 0) {
         checkOutDetails.value.beds = 0
     }
-    checkOutDetails.value.totalPrice += checkOutDetails.value.beds * 500
+    // Recalculate total price based on beds
+    const discount = (checkOutDetails.value.roomPrice * checkOutDetails.value.roomPromo) / 100;
+    const finalPrice = checkOutDetails.value.roomPrice - discount;
+    checkOutDetails.value.totalPrice = (finalPrice * checkOutDetails.value.days) + (checkOutDetails.value.beds * 500);
 }
 
 const calculateDays = () => {
@@ -366,7 +382,7 @@ const getRoomDetails = async () => {
         const discount = (checkOutDetails.value.roomPrice * checkOutDetails.value.roomPromo) / 100;
         const finalPrice = checkOutDetails.value.roomPrice - discount;
 
-        checkOutDetails.value.totalPrice = (finalPrice * checkOutDetails.value.days) || 0;
+        checkOutDetails.value.totalPrice = (finalPrice * checkOutDetails.value.days) + (checkOutDetails.value.beds * 500) || 0;
     } catch (error) {
         console.log(error)
     } finally {

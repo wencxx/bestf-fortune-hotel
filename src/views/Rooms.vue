@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-[90dvh] bg-gray-100 py-10 !pb-20 px-10">
+    <div class="min-h-[90dvh] bg-gray-100 py-10 !pb-20 px-10 pt-[15dvh]">
         <div class="flex flex-col items-center gap-y-20">
             <div class="border-b border-black w-fit mx-auto">
                 <h1 class="text-3xl font-serif">Our Room</h1>
